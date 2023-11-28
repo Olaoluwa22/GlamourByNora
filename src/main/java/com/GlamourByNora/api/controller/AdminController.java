@@ -28,7 +28,7 @@ public class AdminController {
         return adminRepository.findAll(pageable);
     }
     @GetMapping("/admin/{id}")
-    public Optional<Admin> getUAdminbyId(@PathVariable(name ="id") Long adminId){
+    public Optional<Admin> getAdminById(@PathVariable(name ="id") Long adminId){
         return adminRepository.findById(adminId);
     }
     @PostMapping("/admin/create")
