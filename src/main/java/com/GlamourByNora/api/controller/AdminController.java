@@ -5,9 +5,13 @@ import com.GlamourByNora.api.model.Admin;
 import com.GlamourByNora.api.repository.AdminRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class AdminController {
@@ -17,6 +21,15 @@ public class AdminController {
     @GetMapping("/admins")
     public List<Admin> getUsers(){
         return adminRepository.findAll();
+    }
+    @GetMapping("/admin/get")
+    public Page<Admin> getAdminByPageable(@RequestParam int page, @RequestParam int size){
+        Pageable pageable = PageRequest.of(page,size);
+        return adminRepository.findAll(pageable);
+    }
+    @GetMapping("/admin/{id}")
+    public Optional<Admin> getUAdminbyId(@PathVariable(name ="id") Long adminId){
+        return adminRepository.findById(adminId);
     }
     @PostMapping("/admin/create")
     public String createAdmin(@Valid @RequestBody AdminDto adminDto){

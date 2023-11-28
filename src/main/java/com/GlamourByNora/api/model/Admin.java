@@ -1,21 +1,27 @@
 package com.GlamourByNora.api.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 
 @Entity
 public class Admin{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(length = 50, nullable = false)
     private String firstname;
+    @Column(length = 50, nullable = false)
     private String lastname;
+    @Column(length = 50, nullable = false)
     private String country;
+    @Column(length = 50, nullable = false)
     private String state;
+    @Column(length = 50, nullable = false)
     private String address;
+    @Column(length = 100, nullable = false)
+    @Email
     private String email;
+    @Column(length = 13, nullable = false)
     private Long phone_no;
 
     public Long getId() {

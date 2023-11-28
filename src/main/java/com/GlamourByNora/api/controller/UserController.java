@@ -5,9 +5,13 @@ import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class UserController {
@@ -17,6 +21,15 @@ public class UserController {
     @GetMapping("/users")
     public List<User> getUsers(){
         return userRepository.findAll();
+    }
+    @GetMapping("/user/get")
+    public Page<User> getUserByPageable(@RequestParam int page, @RequestParam int size){
+        Pageable pageable = PageRequest.of(page,size);
+        return userRepository.findAll(pageable);
+    }
+    @GetMapping("/user/{id}")
+    public Optional<User> getUserbyId(@PathVariable(name ="id") Long userId){
+        return userRepository.findById(userId);
     }
     @PostMapping("/user/create")
     public String createUser(@Valid @RequestBody UserDto userDto){
