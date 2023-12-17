@@ -9,8 +9,7 @@ import java.time.Instant;
 import java.util.List;
 
 public class ProductDto {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
     @NotNull
     private String name;

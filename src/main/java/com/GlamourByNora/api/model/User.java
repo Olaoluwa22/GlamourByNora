@@ -23,6 +23,7 @@ public class User {
     private String email;
     @Column(length = 13, nullable = false)
     private Long phone_no;
+    private boolean deleted;
 
     public Long getId() {
         return id;
@@ -88,6 +89,14 @@ public class User {
         this.phone_no = phone_no;
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -99,6 +108,8 @@ public class User {
                 ", address='" + address + '\'' +
                 ", email='" + email + '\'' +
                 ", phone_no=" + phone_no +
+                ", deleted=" + deleted +
                 '}';
     }
+
 }
