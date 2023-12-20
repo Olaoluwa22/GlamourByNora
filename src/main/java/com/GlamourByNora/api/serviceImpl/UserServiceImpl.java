@@ -2,10 +2,13 @@ package com.GlamourByNora.api.serviceImpl;
 
 import com.GlamourByNora.api.constants.ConstantMessages;
 import com.GlamourByNora.api.dto.UserDto;
+import com.GlamourByNora.api.dto.UserResponseDto;
 import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
+import com.GlamourByNora.api.service.AuthenticationService;
 import com.GlamourByNora.api.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +25,10 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserResponseDto userResponseDto;
+    @Autowired
+    private AuthenticationService authenticationService;
     @Override
     public ResponseEntity<?> createUser(UserDto userDto) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
@@ -32,6 +40,7 @@ public class UserServiceImpl implements UserService {
         user.setState(userDto.getState());
         user.setAddress(userDto.getAddress());
         user.setEmail(userDto.getEmail());
+        user.setPassword(userDto.getPassword());
         user.setPhone_no(userDto.getPhone_no());
         try {
             Optional<User> byEmail = userRepository.findByEmail(user.getEmail());
@@ -45,27 +54,94 @@ public class UserServiceImpl implements UserService {
         }catch (Exception ex){
             ex.printStackTrace();
         }
-        return new ResponseEntity<>(apiResponseMessages, HttpStatus.CREATED);
+        return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public ResponseEntity<?> getUsers(HttpServletRequest request) throws Exception {
+        authenticationService.isUserLoggedIn(request);
+        ApiResponseMessages< List<UserResponseDto>> apiResponseMessages = new ApiResponseMessages<>();
+        apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
+        try {
+            List<User> allUser = userRepository.findByDeleted(false);
+            List<UserResponseDto> responseData = new ArrayList<>();
+            allUser.forEach(user -> {
+                UserResponseDto userResponseDto = new UserResponseDto();
+                userResponseDto.setFirstname(user.getFirstname());
+                userResponseDto.setLastname(user.getLastname());
+                userResponseDto.setCountry(user.getCountry());
+                userResponseDto.setState(user.getState());
+                userResponseDto.setEmail(user.getEmail());
+                userResponseDto.setPhone_no(user.getPhone_no());
+                responseData.add(userResponseDto);
+            });
+            apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
+            apiResponseMessages.setData(responseData);
+            return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return new ResponseEntity<>(apiResponseMessages, HttpStatus.UNAUTHORIZED);
     }
-
     @Override
-    public Optional<User> getUserById(Long userId) {
-        return userRepository.findById(userId);
+    public ResponseEntity<?> getUserById(Long userId, HttpServletRequest request) throws Exception {
+        authenticationService.isUserLoggedIn(request);
+        ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
+        apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
+        try {
+            Optional<User> byId = userRepository.findById(userId);
+            if (byId.isEmpty()) {
+                apiResponseMessages.setMessage(ConstantMessages.NOT_FOUND.getMessage());
+                return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
+            }
+            User user = byId.get();
+            if (user.isDeleted()) {
+                apiResponseMessages.setMessage(ConstantMessages.NOT_FOUND.getMessage());
+                return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
+            }
+            userResponseDto.setFirstname(user.getFirstname());
+            userResponseDto.setLastname(user.getLastname());
+            userResponseDto.setCountry(user.getCountry());
+            userResponseDto.setState(user.getState());
+            userResponseDto.setEmail(user.getEmail());
+            userResponseDto.setPhone_no(user.getPhone_no());
+            apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
+            return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
-    public Page<User> getUserByPageable(int page, int size) {
+    public ResponseEntity<?> getUserByPageable(int page, int size, HttpServletRequest request) throws Exception {
+        authenticationService.isUserLoggedIn(request);
+        ApiResponseMessages< List<UserResponseDto>> apiResponseMessages = new ApiResponseMessages<>();
+        apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         Pageable pageable = PageRequest.of(page,size);
-        return userRepository.findAll(pageable);
+        try {
+            Page<User> allUser = userRepository.findByDeletedFalse(pageable);
+            List<UserResponseDto> responseData = new ArrayList<>();
+            allUser.forEach(user -> {
+                UserResponseDto userResponseDto = new UserResponseDto();
+                userResponseDto.setFirstname(user.getFirstname());
+                userResponseDto.setLastname(user.getLastname());
+                userResponseDto.setCountry(user.getCountry());
+                userResponseDto.setState(user.getState());
+                userResponseDto.setEmail(user.getEmail());
+                userResponseDto.setPhone_no(user.getPhone_no());
+                responseData.add(userResponseDto);
+            });
+            apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
+            apiResponseMessages.setData(responseData);
+            return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
-    public ResponseEntity<?> updateUserInfo(Long userId, UserDto userDto) {
+    public ResponseEntity<?> updateUserInfo(Long userId, UserDto userDto, HttpServletRequest request) throws Exception {
+        authenticationService.isUserLoggedIn(request);
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         Optional<User> byId = userRepository.findById(userId);
@@ -81,6 +157,7 @@ public class UserServiceImpl implements UserService {
             user.setState(userDto.getState());
             user.setAddress(userDto.getAddress());
             user.setEmail(userDto.getEmail());
+            user.setPassword(userDto.getPassword());
             user.setPhone_no(userDto.getPhone_no());
             userRepository.save(user);
             apiResponseMessages.setMessage(ConstantMessages.UPDATED.getMessage());
@@ -90,9 +167,9 @@ public class UserServiceImpl implements UserService {
         }
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
-    public ResponseEntity<?> deleteUser(Long userId) {
+    public ResponseEntity<?> deleteUser(Long userId, HttpServletRequest request) throws Exception {
+        authenticationService.isUserLoggedIn(request);
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.DELETED.getMessage());
         try {

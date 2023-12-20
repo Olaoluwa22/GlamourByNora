@@ -2,6 +2,9 @@ package com.GlamourByNora.api.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class User {
@@ -23,6 +26,10 @@ public class User {
     private String email;
     @Column(length = 13, nullable = false)
     private Long phone_no;
+    @Column(length = 50, nullable = false)
+    @Size(min = 8)
+    @Pattern(regexp="[a-zA-Z0-9]{8,}")
+    private String password;
     private boolean deleted;
 
     public Long getId() {
@@ -89,6 +96,14 @@ public class User {
         this.phone_no = phone_no;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public boolean isDeleted() {
         return deleted;
     }
@@ -108,8 +123,10 @@ public class User {
                 ", address='" + address + '\'' +
                 ", email='" + email + '\'' +
                 ", phone_no=" + phone_no +
+                ", password='" + password + '\'' +
                 ", deleted=" + deleted +
                 '}';
     }
+
 
 }

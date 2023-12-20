@@ -9,7 +9,8 @@ public enum ConstantMessages {
     UPDATED("Successfully Updated",6),
     EXIST("Email already in use",7),
     DELETED("Deleted", 8),
-    FOUND("Found",9);
+    FOUND("Found",9),
+    INCORRECT("Username or Password Incorrect!",10);
 
     private String message;
     private int status;

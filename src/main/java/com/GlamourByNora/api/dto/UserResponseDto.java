@@ -1,45 +1,15 @@
 package com.GlamourByNora.api.dto;
 
-import jakarta.validation.constraints.*;
+import org.springframework.stereotype.Component;
 
-public class UserDto {
-    private Long id;
-    @NotBlank
-    @NotNull
-    @NotEmpty
+@Component
+public class UserResponseDto {
     private String firstname;
-    @NotBlank
-    @NotNull
-    @NotEmpty
     private String lastname;
-    @NotBlank
-    @NotNull
-    @NotEmpty
     private String country;
-    @NotBlank
-    @NotNull
-    @NotEmpty
     private String state;
-    @NotBlank
-    @NotNull
-    @NotEmpty
-    private String address;
-    @NotBlank
-    @NotNull
-    @NotEmpty
     private String email;
-    @NotBlank
-    private String password;
-    @NotNull
     private Long phone_no;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getFirstname() {
         return firstname;
@@ -73,28 +43,12 @@ public class UserDto {
         this.state = state;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public Long getPhone_no() {
@@ -107,15 +61,12 @@ public class UserDto {
 
     @Override
     public String toString() {
-        return "UserDto{" +
-                "id=" + id +
-                ", firstname='" + firstname + '\'' +
+        return "UserResponseDto{" +
+                "firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
                 ", country='" + country + '\'' +
                 ", state='" + state + '\'' +
-                ", address='" + address + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 ", phone_no=" + phone_no +
                 '}';
     }
