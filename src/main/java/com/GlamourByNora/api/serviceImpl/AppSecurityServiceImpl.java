@@ -1,6 +1,7 @@
 package com.GlamourByNora.api.serviceImpl;
 
 import com.GlamourByNora.api.constants.ConstantMessages;
+import com.GlamourByNora.api.exception.exceptionHandler.UserNotLoggedInException;
 import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
@@ -20,7 +21,7 @@ public class AppSecurityServiceImpl implements AppSecurityService {
     private UserRepository userRepository;
 
     @Override
-    public ResponseEntity<?> getLoggedInUser(HttpServletRequest request) throws Exception {
+    public ResponseEntity<?> getLoggedInUser(HttpServletRequest request) throws UserNotLoggedInException {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         Cookie[] cookie = request.getCookies();
@@ -28,7 +29,7 @@ public class AppSecurityServiceImpl implements AppSecurityService {
         Cookie loginCookie = null;
 
         if (cookie == null){
-            throw new Exception();
+            throw new UserNotLoggedInException("User not Logged In...");
         }
         try{
             for (int i = 0; i < cookie.length ; i++) {
@@ -40,11 +41,11 @@ public class AppSecurityServiceImpl implements AppSecurityService {
                 }
             }
             if (!loggedIn){
-                throw new Exception();
+                throw new UserNotLoggedInException("User not Logged In...");
             }
             Optional<User> cookieOwner = userRepository.findByEmailAndDeleted(loginCookie.getValue(), false);
             if (cookieOwner.isEmpty()){
-                throw new Exception();
+                throw new UserNotLoggedInException("User not Logged In...");
             }
             User user = cookieOwner.get();
             apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
@@ -53,6 +54,6 @@ public class AppSecurityServiceImpl implements AppSecurityService {
         }catch (Exception ex){
             ex.printStackTrace();
         }
-        throw new Exception();
+        throw new UserNotLoggedInException("User not Logged In...");
     }
 }

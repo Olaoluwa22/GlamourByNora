@@ -3,6 +3,7 @@ package com.GlamourByNora.api.serviceImpl;
 import com.GlamourByNora.api.constants.ConstantMessages;
 import com.GlamourByNora.api.constants.ConstantMethods;
 import com.GlamourByNora.api.dto.AuthenticationDto;
+import com.GlamourByNora.api.exception.exceptionHandler.UserNotLoggedInException;
 import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
@@ -49,6 +50,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             Cookie cookie = new Cookie("login", authenticationDto.getUsername());
             cookie.setMaxAge(600);
             cookie.setHttpOnly(true);
+            cookie.setPath("/");
             response.addCookie(cookie);
             apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
@@ -60,13 +62,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public ResponseEntity<?> logout() {
-        return null;
-    }
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
+        apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
+        try {
+            Cookie[] cookie = request.getCookies();
+            if (cookie == null) {
+                apiResponseMessages.setMessage(ConstantMessages.UNAUTHORIZED.getMessage());
+                return new ResponseEntity<>(apiResponseMessages, HttpStatus.UNAUTHORIZED);
+            }
+            for (int i = 0; i < cookie.length; i++) {
+                Cookie loginCookie = cookie[i];
+                if (loginCookie.getName().equals("login")) {
+                    loginCookie.setMaxAge(0);
+                    loginCookie.setPath("/");
+                    response.addCookie(loginCookie);
+                    break;
+                }
+            }
+            apiResponseMessages.setMessage(ConstantMessages.LOGGED_OUT.getMessage());
+           return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+            return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
     @Override
-    public ResponseEntity<?> isUserLoggedIn(HttpServletRequest request) throws Exception {
+    public ResponseEntity<?> isUserLoggedIn(HttpServletRequest request) throws UserNotLoggedInException {
         return appSecurityService.getLoggedInUser(request);
     }
-
 }

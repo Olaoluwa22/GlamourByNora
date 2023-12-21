@@ -10,7 +10,9 @@ public enum ConstantMessages {
     EXIST("Email already in use",7),
     DELETED("Deleted", 8),
     FOUND("Found",9),
-    INCORRECT("Username or Password Incorrect!",10);
+    INCORRECT("Username or Password Incorrect!",10),
+    NOT_LOGGED_IN("User not logged in...",11),
+    LOGGED_OUT("User Logged out Successfully",12);
 
     private String message;
     private int status;
