@@ -9,6 +9,7 @@ import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
 import com.GlamourByNora.api.service.AppSecurityService;
 import com.GlamourByNora.api.service.AuthenticationService;
+import com.GlamourByNora.api.service.CookieAuthenticationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,7 +25,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private AppSecurityService appSecurityService;
+    private CookieAuthenticationService cookieAuthenticationService;
 
     @Override
     public ResponseEntity<?> login(AuthenticationDto authenticationDto, HttpServletResponse response) {
@@ -46,13 +47,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 apiResponseMessages.setMessage(ConstantMessages.INCORRECT.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
-
-            Cookie cookie = new Cookie("login", authenticationDto.getUsername());
-            cookie.setMaxAge(600);
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-            response.addCookie(cookie);
+            cookieAuthenticationService.login(authenticationDto, response);
             apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
+            apiResponseMessages.setData(String.valueOf(user));
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -60,36 +57,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-        ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
-        apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
-        try {
-            Cookie[] cookie = request.getCookies();
-            if (cookie == null) {
-                apiResponseMessages.setMessage(ConstantMessages.UNAUTHORIZED.getMessage());
-                return new ResponseEntity<>(apiResponseMessages, HttpStatus.UNAUTHORIZED);
-            }
-            for (int i = 0; i < cookie.length; i++) {
-                Cookie loginCookie = cookie[i];
-                if (loginCookie.getName().equals("login")) {
-                    loginCookie.setMaxAge(0);
-                    loginCookie.setPath("/");
-                    response.addCookie(loginCookie);
-                    break;
-                }
-            }
-            apiResponseMessages.setMessage(ConstantMessages.LOGGED_OUT.getMessage());
-           return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
-        }catch (Exception ex){
-            ex.printStackTrace();
+        return cookieAuthenticationService.logout(request, response);
         }
-            return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
     @Override
     public ResponseEntity<?> isUserLoggedIn(HttpServletRequest request) throws UserNotLoggedInException {
-        return appSecurityService.getLoggedInUser(request);
+        return cookieAuthenticationService.getLoggedInUser(request);
     }
 }
