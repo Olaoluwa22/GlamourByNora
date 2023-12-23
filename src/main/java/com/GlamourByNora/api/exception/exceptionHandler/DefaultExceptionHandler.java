@@ -42,4 +42,13 @@ public class DefaultExceptionHandler {
         exceptionResponse.setData(list);
         return ResponseEntity.badRequest().body(exceptionResponse);
     }
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<?> UserNotFoundException(UserNotFoundException userNotFound){
+        ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();
+        exceptionResponse.setTimestamp(Instant.now());
+        exceptionResponse.setMessage("User Not Found...");
+        exceptionResponse.setData(null);
+        exceptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
 }

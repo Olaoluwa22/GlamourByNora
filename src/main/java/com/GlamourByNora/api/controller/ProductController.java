@@ -3,6 +3,7 @@ package com.GlamourByNora.api.controller;
 import com.GlamourByNora.api.dto.ProductDto;
 import com.GlamourByNora.api.model.Product;
 import com.GlamourByNora.api.service.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,8 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping("/product/create")
-    public ResponseEntity<?> createNewProduct(@Valid @RequestBody ProductDto productDto){
-       return productService.createNewProduct(productDto);
+    public ResponseEntity<?> createNewProduct(@Valid @RequestBody ProductDto productDto, HttpServletRequest request){
+       return productService.createNewProduct(productDto, request);
     }
     @GetMapping("/product/list")
     public List<Product> getProductList(){
@@ -33,6 +34,6 @@ public class ProductController {
     }
     @DeleteMapping("/product/delete/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable( name = "id") Long productId){
-        return productService.deleteUserById(productId);
+        return productService.deleteProductById(productId);
     }
 }

@@ -7,6 +7,7 @@ import com.GlamourByNora.api.exception.exceptionHandler.UserNotLoggedInException
 import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
+import com.GlamourByNora.api.service.AppSecurityService;
 import com.GlamourByNora.api.service.AuthenticationService;
 import com.GlamourByNora.api.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserResponseDto userResponseDto;
     @Autowired
-    private AuthenticationService authenticationService;
+    private AppSecurityService appSecurityService;
     @Override
     public ResponseEntity<?> createUser(UserDto userDto) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
@@ -61,7 +62,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public ResponseEntity<?> getUsers(HttpServletRequest request) throws UserNotLoggedInException {
-        authenticationService.isUserLoggedIn(request);
+        appSecurityService.getLoggedInUser(request);
         ApiResponseMessages< List<UserResponseDto>> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         try {
@@ -87,7 +88,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public ResponseEntity<?> getUserById(Long userId, HttpServletRequest request) throws UserNotLoggedInException {
-        authenticationService.isUserLoggedIn(request);
+        appSecurityService.getLoggedInUser(request);
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         try {
@@ -96,17 +97,17 @@ public class UserServiceImpl implements UserService {
                 apiResponseMessages.setMessage(ConstantMessages.NOT_FOUND.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
-            User user = byId.get();
-            if (user.isDeleted()) {
+            User databaseUser = byId.get();
+            if (databaseUser.isDeleted()) {
                 apiResponseMessages.setMessage(ConstantMessages.NOT_FOUND.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
-            userResponseDto.setFirstname(user.getFirstname());
-            userResponseDto.setLastname(user.getLastname());
-            userResponseDto.setCountry(user.getCountry());
-            userResponseDto.setState(user.getState());
-            userResponseDto.setEmail(user.getEmail());
-            userResponseDto.setPhone_no(user.getPhone_no());
+            userResponseDto.setFirstname(databaseUser.getFirstname());
+            userResponseDto.setLastname(databaseUser.getLastname());
+            userResponseDto.setCountry(databaseUser.getCountry());
+            userResponseDto.setState(databaseUser.getState());
+            userResponseDto.setEmail(databaseUser.getEmail());
+            userResponseDto.setPhone_no(databaseUser.getPhone_no());
             apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
             return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
         }catch (Exception ex){
@@ -117,7 +118,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public ResponseEntity<?> getUserByPageable(int page, int size, HttpServletRequest request) throws UserNotLoggedInException {
-        authenticationService.isUserLoggedIn(request);
+        appSecurityService.getLoggedInUser(request);
         ApiResponseMessages< List<UserResponseDto>> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         Pageable pageable = PageRequest.of(page,size);
@@ -144,7 +145,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public ResponseEntity<?> updateUserInfo(Long userId, UserDto userDto, HttpServletRequest request) throws UserNotLoggedInException {
-        authenticationService.isUserLoggedIn(request);
+        appSecurityService.getLoggedInUser(request);
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         Optional<User> byId = userRepository.findById(userId);
@@ -153,16 +154,16 @@ public class UserServiceImpl implements UserService {
                 apiResponseMessages.setMessage(ConstantMessages.NOT_FOUND.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
-            User user =byId.get();
-            user.setFirstname(userDto.getFirstname());
-            user.setLastname(userDto.getLastname());
-            user.setCountry(userDto.getCountry());
-            user.setState(userDto.getState());
-            user.setAddress(userDto.getAddress());
-            user.setEmail(userDto.getEmail());
-            user.setPassword(userDto.getPassword());
-            user.setPhone_no(userDto.getPhone_no());
-            userRepository.save(user);
+            User databaseUser =byId.get();
+            databaseUser.setFirstname(userDto.getFirstname());
+            databaseUser.setLastname(userDto.getLastname());
+            databaseUser.setCountry(userDto.getCountry());
+            databaseUser.setState(userDto.getState());
+            databaseUser.setAddress(userDto.getAddress());
+            databaseUser.setEmail(userDto.getEmail());
+            databaseUser.setPassword(userDto.getPassword());
+            databaseUser.setPhone_no(userDto.getPhone_no());
+            userRepository.save(databaseUser);
             apiResponseMessages.setMessage(ConstantMessages.UPDATED.getMessage());
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
         }catch (Exception ex){
@@ -172,7 +173,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public ResponseEntity<?> deleteUser(Long userId, HttpServletRequest request) throws UserNotLoggedInException {
-        authenticationService.isUserLoggedIn(request);
+        appSecurityService.getLoggedInUser(request);
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.DELETED.getMessage());
         try {
@@ -181,9 +182,9 @@ public class UserServiceImpl implements UserService {
                 apiResponseMessages.setMessage(ConstantMessages.NOT_FOUND.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
-            User user = byId.get();
-            user.setDeleted(true);
-            userRepository.save(user);
+            User databaseUser = byId.get();
+            databaseUser.setDeleted(true);
+            userRepository.save(databaseUser);
             apiResponseMessages.setMessage(ConstantMessages.DELETED.getMessage());
         }catch (Exception ex){
             ex.printStackTrace();

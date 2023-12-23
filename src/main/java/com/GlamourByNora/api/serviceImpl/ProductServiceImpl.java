@@ -5,21 +5,30 @@ import com.GlamourByNora.api.dto.ProductDto;
 import com.GlamourByNora.api.model.Product;
 import com.GlamourByNora.api.repository.ProductRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
+import com.GlamourByNora.api.service.AppSecurityService;
 import com.GlamourByNora.api.service.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService{
-    @Autowired
     private ProductRepository productRepository;
+    private AppSecurityService appSecurityService;
+
+    public ProductServiceImpl(ProductRepository productRepository, AppSecurityService appSecurityService){
+        this.productRepository = productRepository;
+        this.appSecurityService = appSecurityService;
+    }
     @Override
-    public ResponseEntity<?> createNewProduct(ProductDto productDto) {
+    public ResponseEntity<?> createNewProduct(ProductDto productDto, HttpServletRequest request) {
+        appSecurityService.getLoggedInUser(request);
         Product product = new Product();
         product.setName(productDto.getName());
         product.setBrand(productDto.getBrand());
@@ -32,8 +41,8 @@ public class ProductServiceImpl implements ProductService{
         product.setStockQuantity(productDto.getStockQuantity());
         product.setImageUrl(productDto.getImageUrl());
         product.setIngredients(productDto.getIngredients());
-        product.setProductionDate(productDto.getProductionDate());
-        product.setExpiryDate(productDto.getExpiryDate());
+        product.setProductionDate();
+        product.setExpiryDate();
         product.setAvailability(productDto.isAvailability());
         product.setCountryOfOrigin(productDto.getCountryOfOrigin());
         productRepository.save(product);
@@ -102,7 +111,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public ResponseEntity<?> deleteUserById(Long productId) {
+    public ResponseEntity<?> deleteProductById(Long productId) {
         productRepository.deleteById(productId);
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.DELETED.getMessage());

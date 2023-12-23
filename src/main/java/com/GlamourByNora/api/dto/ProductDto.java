@@ -1,16 +1,15 @@
 package com.GlamourByNora.api.dto;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
 import java.util.List;
 
 public class ProductDto {
 
-    private Long id;
     @NotNull
     private String name;
     @NotNull
@@ -47,7 +46,6 @@ public class ProductDto {
     @Override
     public String toString() {
         return "Product{" +
-                "id=" + id +
                 ", name='" + name + '\'' +
                 ", brand='" + brand + '\'' +
                 ", fragranceFamily='" + fragranceFamily + '\'' +
@@ -64,14 +62,6 @@ public class ProductDto {
                 ", availability=" + availability +
                 ", countryOfOrigin='" + countryOfOrigin + '\'' +
                 '}';
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {

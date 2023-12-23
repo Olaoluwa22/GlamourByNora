@@ -1,7 +1,8 @@
 package com.GlamourByNora.api.serviceImpl;
 
 import com.GlamourByNora.api.constants.ConstantMessages;
-import com.GlamourByNora.api.dto.AuthenticationDto;
+import com.GlamourByNora.api.constants.ConstantMethod;
+import com.GlamourByNora.api.dto.UserResponseDto;
 import com.GlamourByNora.api.exception.exceptionHandler.UserNotLoggedInException;
 import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.UserRepository;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,17 +21,23 @@ import java.util.Optional;
 
 @Service
 public class CookieAuthenticationServiceImpl implements CookieAuthenticationService {
-    @Autowired
     private UserRepository userRepository;
+    private ConstantMethod constantMethod;
+    public CookieAuthenticationServiceImpl(UserRepository userRepository, ConstantMethod constantMethod){
+        this.userRepository = userRepository;
+        this.constantMethod = constantMethod;
+    }
+
+    @Value("${app.cookie.login}")
+    private String loginCookieName;
     @Override
-    public void login(AuthenticationDto authenticationDto, HttpServletResponse response) {
-        Cookie cookie = new Cookie("login", authenticationDto.getUsername());
+    public void login(User user, HttpServletResponse response) {
+        Cookie cookie = new Cookie(loginCookieName, user.getEmail());
         cookie.setMaxAge(3600);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
     }
-
     @Override
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
@@ -42,7 +50,7 @@ public class CookieAuthenticationServiceImpl implements CookieAuthenticationServ
             }
             for (int i = 0; i < cookie.length; i++) {
                 Cookie loginCookie = cookie[i];
-                if (loginCookie.getName().equals("login")) {
+                if (loginCookie.getName().equalsIgnoreCase(loginCookieName)) {
                     loginCookie.setMaxAge(0);
                     loginCookie.setPath("/");
                     response.addCookie(loginCookie);
@@ -56,7 +64,6 @@ public class CookieAuthenticationServiceImpl implements CookieAuthenticationServ
         }
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
     public ResponseEntity<?> getLoggedInUser(HttpServletRequest request) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
@@ -71,7 +78,7 @@ public class CookieAuthenticationServiceImpl implements CookieAuthenticationServ
         try{
             for (int i = 0; i < cookie.length ; i++) {
                 Cookie cookie1 = cookie[i];
-                if (cookie1.getName().equals("login")){
+                if (cookie1.getName().equalsIgnoreCase(loginCookieName)){
                     loggedIn = true;
                     loginCookie = cookie1;
                     break;
@@ -86,7 +93,8 @@ public class CookieAuthenticationServiceImpl implements CookieAuthenticationServ
             }
             User user = cookieOwner.get();
             apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
-            apiResponseMessages.setData(user.toString());
+            UserResponseDto userResponseDto = constantMethod.convertUserDto(user);
+            apiResponseMessages.setData(String.valueOf(userResponseDto));
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
         }catch (Exception ex){
             ex.printStackTrace();

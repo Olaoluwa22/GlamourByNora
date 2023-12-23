@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/glamourbynora
+    username: root
+    password: password@12345
+  jpa:
+    hibernate:
+      ddl-auto: update
+      show-sql: true
+app:
+    authType: cookie
+    cookie:
+      login: cookie
+    session:
+      login: session

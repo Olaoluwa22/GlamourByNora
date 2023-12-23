@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -35,10 +36,10 @@ public class Product {
     private List<String> ingredients;
     @Past
     @NotNull
-    private Instant productionDate;
+    private Date productionDate;
     @FutureOrPresent
     @NotNull
-    private Instant expiryDate;
+    private Date expiryDate;
     @NotNull
     private boolean availability;
     @Column(length = 70, nullable = false)
@@ -162,19 +163,19 @@ public class Product {
         this.ingredients = ingredients;
     }
 
-    public Instant getProductionDate() {
+    public Date getProductionDate() {
         return productionDate;
     }
 
-    public void setProductionDate(Instant productionDate) {
+    public void setProductionDate(Date productionDate) {
         this.productionDate = productionDate;
     }
 
-    public Instant getExpiryDate() {
+    public Date getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(Instant expiryDate) {
+    public void setExpiryDate(Date expiryDate) {
         this.expiryDate = expiryDate;
     }
 
