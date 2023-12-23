@@ -33,7 +33,7 @@ public class CookieAuthenticationServiceImpl implements CookieAuthenticationServ
     @Override
     public void login(User user, HttpServletResponse response) {
         Cookie cookie = new Cookie(loginCookieName, user.getEmail());
-        cookie.setMaxAge(3600);
+        cookie.setMaxAge(600);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);

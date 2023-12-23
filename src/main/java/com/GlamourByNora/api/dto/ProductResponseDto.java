@@ -1,77 +1,28 @@
-package com.GlamourByNora.api.model;
+package com.GlamourByNora.api.dto;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Entity
-public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(length = 70, nullable = false)
+@Component
+public class ProductResponseDto {
     private String name;
-    @Column(length = 70, nullable = false)
     private String brand;
-    @Column(length = 100, nullable = false)
     private String fragranceFamily;
-    @Column(length = 15, nullable = false)
     private String size;
-    @Column(length = 70, nullable = false)
     private String type;
-    @Column(length = 10, nullable = false)
     private String gender;
     private String description;
-    @Column(length = 20, nullable = false)
     private double price;
-    @Column(length = 20, nullable = false)
     private int stockQuantity;
-    @Column(length = 255, nullable = false)
     private String imageUrl;
-    @NotNull
-    @NotEmpty
     private List<String> ingredients;
-    @Column(nullable = false)
     private String productionDate;
-    @Column(nullable = false)
     private String expiryDate;
-    @NotNull
     private boolean availability;
-    @Column(length = 70, nullable = false)
     private String countryOfOrigin;
-
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", brand='" + brand + '\'' +
-                ", fragranceFamily='" + fragranceFamily + '\'' +
-                ", size='" + size + '\'' +
-                ", type='" + type + '\'' +
-                ", gender='" + gender + '\'' +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                ", stockQuantity=" + stockQuantity +
-                ", imageUrl='" + imageUrl + '\'' +
-                ", ingredients=" + ingredients +
-                ", productionDate=" + productionDate +
-                ", expiryDate=" + expiryDate +
-                ", availability=" + availability +
-                ", countryOfOrigin='" + countryOfOrigin + '\'' +
-                '}';
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -191,5 +142,26 @@ public class Product {
 
     public void setCountryOfOrigin(String countryOfOrigin) {
         this.countryOfOrigin = countryOfOrigin;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductResponseDto{" +
+                "name='" + name + '\'' +
+                ", brand='" + brand + '\'' +
+                ", fragranceFamily='" + fragranceFamily + '\'' +
+                ", size='" + size + '\'' +
+                ", type='" + type + '\'' +
+                ", gender='" + gender + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", stockQuantity=" + stockQuantity +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", ingredients=" + ingredients +
+                ", productionDate='" + productionDate + '\'' +
+                ", expiryDate='" + expiryDate + '\'' +
+                ", availability=" + availability +
+                ", countryOfOrigin='" + countryOfOrigin + '\'' +
+                '}';
     }
 }

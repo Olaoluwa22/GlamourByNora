@@ -31,39 +31,15 @@ public class ProductDto {
     @NotNull
     private String imageUrl;
     private List<String> ingredients;
-    @Past
     @NotNull
-    private Instant productionDate;
-    @FutureOrPresent
+    private String productionDate;
     @NotNull
-    private Instant expiryDate;
+    private String expiryDate;
     @NotNull
     private boolean availability;
     @NotNull
     @Size(min=4, max=75)
     private String countryOfOrigin;
-
-    @Override
-    public String toString() {
-        return "Product{" +
-                ", name='" + name + '\'' +
-                ", brand='" + brand + '\'' +
-                ", fragranceFamily='" + fragranceFamily + '\'' +
-                ", size='" + size + '\'' +
-                ", type='" + type + '\'' +
-                ", gender='" + gender + '\'' +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                ", stockQuantity=" + stockQuantity +
-                ", imageUrl='" + imageUrl + '\'' +
-                ", ingredients=" + ingredients +
-                ", productionDate=" + productionDate +
-                ", expiryDate=" + expiryDate +
-                ", availability=" + availability +
-                ", countryOfOrigin='" + countryOfOrigin + '\'' +
-                '}';
-    }
-
     public String getName() {
         return name;
     }
@@ -152,19 +128,19 @@ public class ProductDto {
         this.ingredients = ingredients;
     }
 
-    public Instant getProductionDate() {
+    public String getProductionDate() {
         return productionDate;
     }
 
-    public void setProductionDate(Instant productionDate) {
+    public void setProductionDate(String productionDate) {
         this.productionDate = productionDate;
     }
 
-    public Instant getExpiryDate() {
+    public String getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(Instant expiryDate) {
+    public void setExpiryDate(String expiryDate) {
         this.expiryDate = expiryDate;
     }
 
@@ -182,5 +158,26 @@ public class ProductDto {
 
     public void setCountryOfOrigin(String countryOfOrigin) {
         this.countryOfOrigin = countryOfOrigin;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                ", name='" + name + '\'' +
+                ", brand='" + brand + '\'' +
+                ", fragranceFamily='" + fragranceFamily + '\'' +
+                ", size='" + size + '\'' +
+                ", type='" + type + '\'' +
+                ", gender='" + gender + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", stockQuantity=" + stockQuantity +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", ingredients=" + ingredients +
+                ", productionDate=" + productionDate +
+                ", expiryDate=" + expiryDate +
+                ", availability=" + availability +
+                ", countryOfOrigin='" + countryOfOrigin + '\'' +
+                '}';
     }
 }

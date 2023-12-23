@@ -11,6 +11,7 @@ public interface ProductService {
     public ResponseEntity<?> createNewProduct(ProductDto productDto, HttpServletRequest request);
     public List<Product> getProductList();
     public ResponseEntity<?> getProductById(Long productId);
-    public ResponseEntity<?> updateProductById(Long productId, ProductDto productDto);
-    public ResponseEntity<?> deleteProductById(Long productId);
+    public ResponseEntity<?> getProductByPageable(int page, int size);
+    public ResponseEntity<?> updateProductById(Long productId, ProductDto productDto, HttpServletRequest request);
+    public ResponseEntity<?> deleteProductById(Long productId, HttpServletRequest request);
 }

@@ -29,7 +29,7 @@ public class DefaultExceptionHandler {
     public ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException exception){
         ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();
         exceptionResponse.setTimestamp(Instant.now());
-        exceptionResponse.setMessage("User Not Logged In...");
+        exceptionResponse.setMessage("Argument not valid...");
         exceptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         List<FieldError> fieldErrorList = exception.getFieldErrors();
         List<Map<String,String>> list = new ArrayList<>();

@@ -17,13 +17,16 @@ import java.util.Optional;
 @RestController
 public class UserController {
 
-    @Autowired
     private UserService userService;
+    public UserController(UserService userService){
+        this.userService = userService;
+    }
+
     @GetMapping("/users")
     public ResponseEntity<?> getUsers(HttpServletRequest request) throws Exception {
         return userService.getUsers(request);
     }
-    @GetMapping("/user/get")
+    @GetMapping("/user/page-list")
     public ResponseEntity<?> getUserByPageable(@RequestParam int page, @RequestParam int size, HttpServletRequest request) throws Exception {
        return userService.getUserByPageable(page, size, request);
     }
