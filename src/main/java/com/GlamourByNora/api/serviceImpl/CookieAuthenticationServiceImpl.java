@@ -91,10 +91,7 @@ public class CookieAuthenticationServiceImpl implements CookieAuthenticationServ
             if (cookieOwner.isEmpty()){
                 throw new UserNotLoggedInException("User not Logged In...");
             }
-            User user = cookieOwner.get();
             apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
-            UserResponseDto userResponseDto = constantMethod.convertUserDto(user);
-            apiResponseMessages.setData(String.valueOf(userResponseDto));
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
         }catch (Exception ex){
             ex.printStackTrace();

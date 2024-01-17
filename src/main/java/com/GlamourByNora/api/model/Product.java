@@ -3,7 +3,6 @@ package com.GlamourByNora.api.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
 
 import java.util.List;
 
@@ -42,6 +41,9 @@ public class Product {
     private boolean availability;
     @Column(length = 70, nullable = false)
     private String countryOfOrigin;
+    @ManyToOne
+    @JoinColumn(name = "products")
+    private Cart shoppingCart;
 
     @Override
     public String toString() {
@@ -64,132 +66,106 @@ public class Product {
                 ", countryOfOrigin='" + countryOfOrigin + '\'' +
                 '}';
     }
-
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
-
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
     public String getBrand() {
         return brand;
     }
-
     public void setBrand(String brand) {
         this.brand = brand;
     }
-
     public String getFragranceFamily() {
         return fragranceFamily;
     }
-
     public void setFragranceFamily(String fragranceFamily) {
         this.fragranceFamily = fragranceFamily;
     }
-
     public String getSize() {
         return size;
     }
-
     public void setSize(String size) {
         this.size = size;
     }
-
     public String getType() {
         return type;
     }
-
     public void setType(String type) {
         this.type = type;
     }
-
     public String getGender() {
         return gender;
     }
-
     public void setGender(String gender) {
         this.gender = gender;
     }
-
     public String getDescription() {
         return description;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }
-
     public double getPrice() {
         return price;
     }
-
     public void setPrice(double price) {
         this.price = price;
     }
-
     public int getStockQuantity() {
         return stockQuantity;
     }
-
     public void setStockQuantity(int stockQuantity) {
         this.stockQuantity = stockQuantity;
     }
-
     public String getImageUrl() {
         return imageUrl;
     }
-
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
-
     public List<String> getIngredients() {
         return ingredients;
     }
-
     public void setIngredients(List<String> ingredients) {
         this.ingredients = ingredients;
     }
-
     public String getProductionDate() {
         return productionDate;
     }
-
     public void setProductionDate(String productionDate) {
         this.productionDate = productionDate;
     }
-
     public String getExpiryDate() {
         return expiryDate;
     }
-
     public void setExpiryDate(String expiryDate) {
         this.expiryDate = expiryDate;
     }
-
     public boolean isAvailability() {
         return availability;
     }
-
     public void setAvailability(boolean availability) {
         this.availability = availability;
     }
-
     public String getCountryOfOrigin() {
         return countryOfOrigin;
     }
-
     public void setCountryOfOrigin(String countryOfOrigin) {
         this.countryOfOrigin = countryOfOrigin;
+    }
+    public Cart getShoppingCart() {
+        return shoppingCart;
+    }
+    public void setShoppingCart(Cart shoppingCart) {
+        this.shoppingCart = shoppingCart;
     }
 }

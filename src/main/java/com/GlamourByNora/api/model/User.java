@@ -31,87 +31,70 @@ public class User {
     @Pattern(regexp="[a-zA-Z0-9]{8,}")
     private String password;
     private boolean deleted;
+    @OneToOne(mappedBy = "user")
+    @JoinColumn(name = "user_id")
+    private Cart shoppingCart;
 
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
-
     public String getFirstname() {
         return firstname;
     }
-
     public void setFirstname(String firstname) {
         this.firstname = firstname;
     }
-
     public String getLastname() {
         return lastname;
     }
-
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }
-
     public String getCountry() {
         return country;
     }
-
     public void setCountry(String country) {
         this.country = country;
     }
-
     public String getState() {
         return state;
     }
-
     public void setState(String state) {
         this.state = state;
     }
-
     public String getAddress() {
         return address;
     }
-
     public void setAddress(String address) {
         this.address = address;
     }
-
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
-
     public Long getPhone_no() {
         return phone_no;
     }
-
     public void setPhone_no(Long phone_no) {
         this.phone_no = phone_no;
     }
-
     public String getPassword() {
         return password;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
-
     public boolean isDeleted() {
         return deleted;
     }
-
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
-
     @Override
     public String toString() {
         return "User{" +
