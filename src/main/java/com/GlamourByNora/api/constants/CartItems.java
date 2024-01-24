@@ -1,23 +1,16 @@
 package com.GlamourByNora.api.constants;
-
-import com.GlamourByNora.api.model.Product;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-@Component
 public class CartItems {
-    private Product product;
+    private long productId;
     private int quantity;
-    public CartItems(Product product, int quantity){
-        this.product = product;
+    public CartItems(long productId, int quantity){
+        this.productId = productId;
         this.quantity = quantity;
     }
-
-    public Product getProduct() {
-        return product;
+    public long getProductId() {
+        return productId;
     }
-    public void setProducts(Product product) {
-        this.product = product;
+    public void setProductId(long productId) {
+        this.productId = productId;
     }
     public int getQuantity() {
         return quantity;
@@ -28,7 +21,7 @@ public class CartItems {
     @Override
     public String toString() {
         return "CartItems{" +
-                "product=" + product +
+                "productId=" + productId +
                 ", quantity=" + quantity +
                 '}';
     }

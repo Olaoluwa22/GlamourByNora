@@ -12,7 +12,9 @@ public enum ConstantMessages {
     FOUND("Found",9),
     INCORRECT("Username or Password Incorrect!",10),
     NOT_LOGGED_IN("User not logged in...",11),
-    LOGGED_OUT("User Logged out Successfully",12);
+    LOGGED_OUT("User Logged out Successfully",12),
+    ADDED_TO_CART("Added to cart", 13),
+    DELETED_FROM_CART("Deleted from cart", 14);
 
     private String message;
     private int status;

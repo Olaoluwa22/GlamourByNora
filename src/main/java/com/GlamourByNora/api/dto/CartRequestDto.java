@@ -1,7 +1,6 @@
 package com.GlamourByNora.api.dto;
 
 import jakarta.validation.constraints.NotNull;
-
 public class CartRequestDto {
     @NotNull
     private long productId;
