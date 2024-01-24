@@ -41,9 +41,8 @@ public class Product {
     private boolean availability;
     @Column(length = 70, nullable = false)
     private String countryOfOrigin;
-    @ManyToOne
-    @JoinColumn(name = "products")
-    private Cart shoppingCart;
+    @ManyToMany(mappedBy = "products")
+    private List<Cart> shoppingCarts;
 
     @Override
     public String toString() {
@@ -60,10 +59,11 @@ public class Product {
                 ", stockQuantity=" + stockQuantity +
                 ", imageUrl='" + imageUrl + '\'' +
                 ", ingredients=" + ingredients +
-                ", productionDate=" + productionDate +
-                ", expiryDate=" + expiryDate +
+                ", productionDate='" + productionDate + '\'' +
+                ", expiryDate='" + expiryDate + '\'' +
                 ", availability=" + availability +
                 ", countryOfOrigin='" + countryOfOrigin + '\'' +
+                ", shoppingCarts=" + shoppingCarts +
                 '}';
     }
     public Long getId() {
@@ -162,10 +162,10 @@ public class Product {
     public void setCountryOfOrigin(String countryOfOrigin) {
         this.countryOfOrigin = countryOfOrigin;
     }
-    public Cart getShoppingCart() {
-        return shoppingCart;
+    public List<Cart> getShoppingCarts() {
+        return shoppingCarts;
     }
-    public void setShoppingCart(Cart shoppingCart) {
-        this.shoppingCart = shoppingCart;
+    public void setShoppingCarts(List<Cart> shoppingCarts) {
+        this.shoppingCarts = shoppingCarts;
     }
 }

@@ -11,7 +11,10 @@ public class Cart {
     private Long id;
     @OneToOne
     private User user;
-    @OneToMany(mappedBy = "shoppingCart")
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable (name = "cart_products",
+               joinColumns = @JoinColumn(name = "cart_id"),
+               inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> products;
 
     public User getUser() {

@@ -2,7 +2,6 @@ package com.GlamourByNora.api.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -95,6 +94,14 @@ public class User {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
+    public Cart getShoppingCart() {
+        return shoppingCart;
+    }
+    public Cart setShoppingCart(Cart shoppingCart) {
+        this.shoppingCart = shoppingCart;
+        return shoppingCart;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -108,8 +115,7 @@ public class User {
                 ", phone_no=" + phone_no +
                 ", password='" + password + '\'' +
                 ", deleted=" + deleted +
+                ", shoppingCart=" + shoppingCart +
                 '}';
     }
-
-
 }
