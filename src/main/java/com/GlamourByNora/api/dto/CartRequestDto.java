@@ -10,7 +10,6 @@ public class CartRequestDto {
     public void setProductId(long productId) {
         this.productId = productId;
     }
-
     @Override
     public String toString() {
         return "CartRequestDto{" +

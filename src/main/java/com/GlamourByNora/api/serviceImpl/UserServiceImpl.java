@@ -47,8 +47,8 @@ public class UserServiceImpl implements UserService {
         user.setPassword(userDto.getPassword());
         user.setPhone_no(userDto.getPhone_no());
         try {
-            Optional<User> byEmail = userRepository.findByEmail(user.getEmail());
-            if (byEmail.isPresent()) {
+            Optional<User> userInDatabase = userRepository.findByEmail(user.getEmail());
+            if (userInDatabase.isPresent()) {
                 apiResponseMessages.setMessage(ConstantMessages.EXIST.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
@@ -148,13 +148,13 @@ public class UserServiceImpl implements UserService {
         appSecurityService.getLoggedInUser(request);
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
-        Optional<User> byId = userRepository.findById(userId);
+        Optional<User> userInDatabase = userRepository.findById(userId);
         try{
-            if (byId.isEmpty()) {
+            if (userInDatabase.isEmpty()) {
                 apiResponseMessages.setMessage(ConstantMessages.NOT_FOUND.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
-            User databaseUser =byId.get();
+            User databaseUser =userInDatabase.get();
             databaseUser.setFirstname(userDto.getFirstname());
             databaseUser.setLastname(userDto.getLastname());
             databaseUser.setCountry(userDto.getCountry());
