@@ -1,6 +1,6 @@
 package com.GlamourByNora.api.serviceImpl;
 
-import com.GlamourByNora.api.constants.CartItems;
+import com.GlamourByNora.api.util.CartItems;
 import com.GlamourByNora.api.constants.ConstantMessages;
 import com.GlamourByNora.api.dto.CartRequestDto;
 import com.GlamourByNora.api.response.ApiResponseMessages;
@@ -26,7 +26,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             for (int i = 0; i < cartItems.size(); i++) {
                 CartItems currentItem = cartItems.get(i);
                 if(currentItem.getProductId() == cartRequestDto.getProductId()){
-                  cartItems.get(i).setQuantity(currentItem.getQuantity()+1);
+                  currentItem.setQuantity(currentItem.getQuantity()+1);
                   itemAlreadyExist = true;
                   break;
                 }
@@ -75,7 +75,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
     private HttpSession generateNewCart(CartRequestDto cartRequestDto, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        List<CartItems> cartItems = new ArrayList<>(Arrays.asList(new CartItems(cartRequestDto.getProductId(), 1)));
+        List<CartItems> cartItems = new ArrayList<>(List.of(new CartItems(cartRequestDto.getProductId(), 1)));
         session.setAttribute("cart", cartItems);
         return session;
     }

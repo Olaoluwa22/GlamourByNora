@@ -1,5 +1,8 @@
-package com.GlamourByNora.api.constants;
-public class CartItems {
+package com.GlamourByNora.api.util;
+
+import java.io.Serializable;
+
+public class CartItems implements Serializable {
     private long productId;
     private int quantity;
     public CartItems(long productId, int quantity){
