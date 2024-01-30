@@ -14,7 +14,10 @@ public enum ConstantMessages {
     NOT_LOGGED_IN("User not logged in...",11),
     LOGGED_OUT("User Logged out Successfully",12),
     ADDED_TO_CART("Added to cart", 13),
-    DELETED_FROM_CART("Deleted from cart", 14);
+    DELETED_FROM_CART("Deleted from cart", 14),
+    PROCEED("Continue",15 ),
+    INCORRECT_PASSWORD("Password Incorrect", 16),
+    CHECK_INPUT("Input Mismatch", 17);
 
     private String message;
     private int status;

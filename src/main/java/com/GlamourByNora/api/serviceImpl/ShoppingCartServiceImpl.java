@@ -1,10 +1,10 @@
 package com.GlamourByNora.api.serviceImpl;
 
-import com.GlamourByNora.api.util.CartItems;
 import com.GlamourByNora.api.constants.ConstantMessages;
 import com.GlamourByNora.api.dto.CartRequestDto;
 import com.GlamourByNora.api.response.ApiResponseMessages;
 import com.GlamourByNora.api.service.ShoppingCartService;
+import com.GlamourByNora.api.util.CartItems;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
@@ -33,8 +32,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             }
             if (!itemAlreadyExist){
                 cartItems.add(new CartItems(cartRequestDto.getProductId(),1));
-                apiResponseMessages.setMessage(ConstantMessages.ADDED_TO_CART.getMessage());
-                return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
             }
             session.setAttribute("cart", cartItems);
             System.out.println(cartItems);
@@ -42,12 +39,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
         }
         if ((session != null) && session.getAttribute("cart") == null){
-            session = generateNewCart(cartRequestDto, request);
+            generateNewCart(cartRequestDto, request);
             apiResponseMessages.setMessage(ConstantMessages.ADDED_TO_CART.getMessage());
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
         }
         if (session == null){
-            session = generateNewCart(cartRequestDto, request);
+            generateNewCart(cartRequestDto, request);
             apiResponseMessages.setMessage(ConstantMessages.ADDED_TO_CART.getMessage());
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
         }
