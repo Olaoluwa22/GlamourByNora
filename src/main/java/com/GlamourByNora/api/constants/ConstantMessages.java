@@ -17,7 +17,8 @@ public enum ConstantMessages {
     DELETED_FROM_CART("Deleted from cart", 14),
     PROCEED("Continue",15 ),
     INCORRECT_PASSWORD("Password Incorrect", 16),
-    CHECK_INPUT("Input Mismatch", 17);
+    CHECK_INPUT("Input Mismatch", 17),
+    INVALID_EMAIL("Email not valid", 18);
 
     private String message;
     private int status;
