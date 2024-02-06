@@ -28,8 +28,8 @@ public class PasswordController {
         return passwordService.forgetPassword(forgetPasswordDto, response);
     }
     @PostMapping("/verify-code")
-    public ResponseEntity<?> verifyCode(@Valid @RequestBody VerificationCodeDto verificationCodeDto){
-        return passwordService.verifyCode(verificationCodeDto);
+    public ResponseEntity<?> verifyCode(@Valid @RequestBody VerificationCodeDto verificationCodeDto, HttpServletRequest request){
+        return passwordService.verifyCode(verificationCodeDto, request);
     }
     @PostMapping("/new-password")
     public ResponseEntity<?> setNewPassword(@Valid @RequestBody NewPasswordDto newPasswordDto, HttpServletRequest request){

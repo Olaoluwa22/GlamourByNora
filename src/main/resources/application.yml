@@ -16,9 +16,8 @@ spring:
     username: eb2814df09d834
     password: 96a83f9b980f78
     protocol: smtp
-    tls: true
     properties.mail.smtp:
-    auth: PLAIN, LOGIN and CRAM-MD5
+    auth: false
     starttls.enable: true
 app:
     authType: cookie
