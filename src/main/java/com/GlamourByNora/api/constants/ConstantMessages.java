@@ -18,7 +18,11 @@ public enum ConstantMessages {
     PROCEED("Continue",15 ),
     INCORRECT_PASSWORD("Password Incorrect", 16),
     CHECK_INPUT("Input Mismatch", 17),
-    INVALID_EMAIL("Email not valid", 18);
+    INVALID_EMAIL("Email not valid", 18),
+    OTP_IS_EXPIRED("OTP is expired", 19),
+    OTP_INCORRECT("OTP not correct", 20),
+    NEW_PASSWORD_SAVED("New password is saved! ", 21),
+    NEW_OTP_SENT("New OTP has been sent", 22);
 
     private String message;
     private int status;

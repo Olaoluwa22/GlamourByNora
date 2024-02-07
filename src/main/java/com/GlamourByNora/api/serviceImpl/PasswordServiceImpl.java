@@ -90,17 +90,17 @@ public class PasswordServiceImpl implements PasswordService {
             }
             User user = databaseUser.get();
             Cookie cookie = new Cookie("userEmail", forgetPasswordDto.getEmail());
-            cookie.setMaxAge(3600);
+            cookie.setMaxAge(600);
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             response.addCookie(cookie);
             OTP otp = new OTP();
             otp.setOtp(String.valueOf(ThreadLocalRandom.current().nextInt(100000, 999999)));
             otp.setCreatedAt(Instant.now());
-            otp.setExpiresAt(Instant.now().plusSeconds(120));
+            otp.setExpiresAt(Instant.now().plusSeconds(70));
             otp.setUserId(user.getId());
             otp.setExpired(false);
-            emailVerificationService.sendVerificationCode(user, otp.getOtp());
+            emailVerificationService.sendVerificationCode(user.getEmail(), otp.getOtp());
             otpRepository.save(otp);
         }catch (NullPointerException exception){
             exception.getMessage();
@@ -108,23 +108,24 @@ public class PasswordServiceImpl implements PasswordService {
         apiResponseMessages.setMessage(ConstantMessages.PROCEED.getMessage());
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
     }
-
     public ResponseEntity<?> verifyCode(VerificationCodeDto verificationCodeDto, HttpServletRequest request){
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
-        GetCookieValue cookieValue = new GetCookieValue();
-        cookieValue.getCookieValue(request);
         try {
-            Optional<User> databaseUser = userRepository.findByEmail(cookieValue.getCookieValue(request));
-            if (databaseUser.isEmpty()) {
-                apiResponseMessages.setMessage(ConstantMessages.INVALID_EMAIL.getMessage());
-                return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
-            }
             Optional<OTP> databaseOTP = otpRepository.findByOtp(verificationCodeDto.getCode());
             if (databaseOTP.isEmpty()){
-                apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
+                apiResponseMessages.setMessage(ConstantMessages.OTP_INCORRECT.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
+            OTP otp = databaseOTP.get();
+            if (Instant.now().isAfter(otp.getExpiresAt())){
+                otp.setExpired(true);
+                otpRepository.save(otp);
+                apiResponseMessages.setMessage(ConstantMessages.OTP_IS_EXPIRED.getMessage());
+                return new ResponseEntity<>(apiResponseMessages, HttpStatus.FORBIDDEN);
+            }
             apiResponseMessages.setMessage(ConstantMessages.PROCEED.getMessage());
+            otp.setExpired(true);
+            otpRepository.save(otp);
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
         }catch (NullPointerException exception){
             exception.printStackTrace();
@@ -133,11 +134,10 @@ public class PasswordServiceImpl implements PasswordService {
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @Override
-    public ResponseEntity<?> setNewPassword(NewPasswordDto newPasswordDto, HttpServletRequest request) {
+    public ResponseEntity<?> resendCode(HttpServletRequest request) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         GetCookieValue cookieValue = new GetCookieValue();
-        cookieValue.getCookieValue(request);
         try {
             Optional<User> databaseUser = userRepository.findByEmail(cookieValue.getCookieValue(request));
             if (databaseUser.isEmpty()) {
@@ -145,14 +145,40 @@ public class PasswordServiceImpl implements PasswordService {
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
             User user = databaseUser.get();
-
+            OTP otp = new OTP();
+            otp.setOtp(String.valueOf(ThreadLocalRandom.current().nextInt(100000, 999999)));
+            otp.setCreatedAt(Instant.now());
+            otp.setExpiresAt(Instant.now().plusSeconds(70));
+            otp.setUserId(user.getId());
+            otp.setExpired(false);
+            emailVerificationService.sendVerificationCode(user.getEmail(), otp.getOtp());
+            otpRepository.save(otp);
+            apiResponseMessages.setMessage(ConstantMessages.NEW_OTP_SENT.getMessage());
+            return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
+        } catch (NullPointerException exception) {
+            exception.printStackTrace();
+        }
+        return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @Override
+    public ResponseEntity<?> setNewPassword(NewPasswordDto newPasswordDto, HttpServletRequest request) {
+        ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
+        apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
+        GetCookieValue cookieValue = new GetCookieValue();
+        try {
+            Optional<User> databaseUser = userRepository.findByEmail(cookieValue.getCookieValue(request));
+            if (databaseUser.isEmpty()) {
+                apiResponseMessages.setMessage(ConstantMessages.INVALID_EMAIL.getMessage());
+                return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
+            }
+            User user = databaseUser.get();
             if (!newPasswordDto.getPassword().equals(newPasswordDto.getConfirmPassword())){
                 apiResponseMessages.setMessage(ConstantMessages.CHECK_INPUT.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
             user.setPassword(newPasswordDto.getPassword());
             userRepository.save(user);
-            apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
+            apiResponseMessages.setMessage(ConstantMessages.NEW_PASSWORD_SAVED.getMessage());
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
         }catch (NullPointerException exception){
             exception.getMessage();

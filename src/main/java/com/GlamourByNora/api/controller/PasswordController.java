@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/account")
 public class PasswordController {
     @Autowired
     private PasswordService passwordService;
@@ -30,6 +32,10 @@ public class PasswordController {
     @PostMapping("/verify-code")
     public ResponseEntity<?> verifyCode(@Valid @RequestBody VerificationCodeDto verificationCodeDto, HttpServletRequest request){
         return passwordService.verifyCode(verificationCodeDto, request);
+    }
+    @PostMapping("/resend-code")
+    public ResponseEntity<?> resendCode(HttpServletRequest request){
+        return passwordService.resendCode(request);
     }
     @PostMapping("/new-password")
     public ResponseEntity<?> setNewPassword(@Valid @RequestBody NewPasswordDto newPasswordDto, HttpServletRequest request){

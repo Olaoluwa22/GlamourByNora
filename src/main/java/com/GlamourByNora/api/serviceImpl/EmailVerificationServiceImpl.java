@@ -14,18 +14,15 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     @Autowired
     private JavaMailSender javaMailSender;
     @Override
-    public void sendVerificationCode(User user, String otp) {
+    public void sendVerificationCode(String email, String otp) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setSubject("OTP Verification");
         mailMessage.setFrom("GlamourByNora@gmail.com");
-        mailMessage.setTo(user.getEmail());
+        mailMessage.setTo(email);
         mailMessage.setText(otp);
-        System.out.println("Your OTP is: "+otp);
     try {
         javaMailSender.send(mailMessage);
-        System.out.println("Mail sent successfully!");
     }catch (MailException mailException) {
-        System.out.println("Mail failed to send");
         mailException.printStackTrace();
        }
     }
