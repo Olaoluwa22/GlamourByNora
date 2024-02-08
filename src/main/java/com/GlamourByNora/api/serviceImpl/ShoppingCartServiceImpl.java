@@ -2,19 +2,42 @@ package com.GlamourByNora.api.serviceImpl;
 
 import com.GlamourByNora.api.constants.ConstantMessages;
 import com.GlamourByNora.api.dto.CartRequestDto;
+import com.GlamourByNora.api.model.Cart;
+import com.GlamourByNora.api.model.Product;
+import com.GlamourByNora.api.model.User;
+import com.GlamourByNora.api.repository.CartRepository;
+import com.GlamourByNora.api.repository.ProductRepository;
+import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
+import com.GlamourByNora.api.service.AppSecurityService;
 import com.GlamourByNora.api.service.ShoppingCartService;
 import com.GlamourByNora.api.util.CartItems;
+import com.GlamourByNora.api.util.GetCookieValue;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
+    @Autowired
+    private AppSecurityService appSecurityService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private CartRepository cartRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Value("${app.cookie.login}")
+    private String loginCookieName;
     @Override
     public ResponseEntity<?> addToCart(CartRequestDto cartRequestDto, HttpServletRequest request) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
@@ -69,6 +92,39 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
+    }
+    @Override
+    public ResponseEntity<?> purchase(HttpServletRequest request) {
+        appSecurityService.getLoggedInUser(request);
+        ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
+        apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
+        GetCookieValue cookie = new GetCookieValue();
+        try {
+            Optional<User> databaseUser = userRepository.findByEmail("SteveNora01@gmail.com");
+            if (databaseUser.isEmpty()) {
+                apiResponseMessages.setMessage(ConstantMessages.INVALID_EMAIL.getMessage());
+                return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
+            }
+            User user = databaseUser.get();
+            HttpSession session = request.getSession(false);
+            Cart cart = new Cart();
+            cart.setUser(user);
+            List<CartItems> cartItems = (List<CartItems>) session.getAttribute("cart");
+            List<Product> productsFromCartItems = new ArrayList<>();
+            for (int i = 0; i < cartItems.size() ; i++) {
+                if (!cartItems.isEmpty()) {
+                    Product databaseProduct = productRepository.findProductById(cartItems.get(i).getProductId());
+                    productsFromCartItems.add(databaseProduct);
+                }
+            }
+            cart.setProducts(productsFromCartItems);
+            cartRepository.save(cart);
+            apiResponseMessages.setMessage(ConstantMessages.PROCEED.getMessage());
+            return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
+        }catch (NullPointerException exception){
+            exception.printStackTrace();
+        }
+        return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     private HttpSession generateNewCart(CartRequestDto cartRequestDto, HttpServletRequest request) {
         HttpSession session = request.getSession();

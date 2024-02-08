@@ -21,4 +21,9 @@ public class ShoppingCartController {
     public ResponseEntity<?> deleteFromCart(@RequestBody CartRequestDto cartRequestDto, HttpServletRequest request){
         return shoppingCartService.deleteFromCart(cartRequestDto, request);
     }
+    @PostMapping("/purchase")
+    public ResponseEntity<?> purchase(HttpServletRequest request){
+        return shoppingCartService.purchase(request);
+    }
+
 }

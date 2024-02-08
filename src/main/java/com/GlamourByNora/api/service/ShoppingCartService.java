@@ -7,4 +7,5 @@ import org.springframework.http.ResponseEntity;
 public interface ShoppingCartService {
      ResponseEntity<?> addToCart(CartRequestDto cartRequestDto, HttpServletRequest request);
      ResponseEntity<?> deleteFromCart(CartRequestDto cartRequestDto, HttpServletRequest request);
+     ResponseEntity<?> purchase(HttpServletRequest request);
 }

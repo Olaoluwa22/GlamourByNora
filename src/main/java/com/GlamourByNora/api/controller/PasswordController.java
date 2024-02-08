@@ -3,7 +3,6 @@ package com.GlamourByNora.api.controller;
 import com.GlamourByNora.api.dto.NewPasswordDto;
 import com.GlamourByNora.api.dto.PasswordDto;
 import com.GlamourByNora.api.dto.VerificationCodeDto;
-import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.service.PasswordService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

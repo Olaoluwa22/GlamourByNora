@@ -13,7 +13,6 @@ import com.GlamourByNora.api.response.ApiResponseMessages;
 import com.GlamourByNora.api.service.AppSecurityService;
 import com.GlamourByNora.api.service.EmailVerificationService;
 import com.GlamourByNora.api.service.PasswordService;
-import com.GlamourByNora.api.util.GenerateOTP;
 import com.GlamourByNora.api.util.GetCookieValue;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -69,9 +68,9 @@ public class PasswordServiceImpl implements PasswordService {
                 apiResponseMessages.setMessage(ConstantMessages.CHECK_INPUT.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
-            user.setPassword(passwordDto.getNewPassword());
+            user.setPassword(passwordDto.getConfirmNewPassword());
             userRepository.save(user);
-            apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
+            apiResponseMessages.setMessage(ConstantMessages.NEW_PASSWORD_SAVED.getMessage());
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
         }catch(NullPointerException exception){
             exception.getMessage();
