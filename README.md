@@ -1,4 +1,4 @@
-E-commerce Website Project README
+GlamourByNora-Perfumery E-commerce Website Project README
 
 Welcome to GlamourByNora-Perfumery E-commerce Website project repository! 
 This project is built using Java, Spring, and Spring Boot frameworks.
