@@ -3,11 +3,9 @@ package com.GlamourByNora.api.util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
-
 public class GetCookieValue {
     @Value("${app.cookie.login}")
     private String loginCookieName;
-
     public String getCookieValue(HttpServletRequest request){
         Cookie[] cookie = request.getCookies();
         Cookie value = null;
@@ -26,7 +24,7 @@ public class GetCookieValue {
         for (int i = 0; i < cookie.length; i++) {
             Cookie cookies = cookie[i];
             if (cookies.getName().equalsIgnoreCase(loginCookieName)) {
-                value = cookie[i];
+                value = cookies;
                 break;
             }
         }

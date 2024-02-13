@@ -22,13 +22,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private UserRepository userRepository;
     private AppSecurityService appSecurityService;
     private ConstantMethod constantMethod;
-
     public AuthenticationServiceImpl(UserRepository userRepository, AppSecurityService appSecurityService, ConstantMethod constantMethod) {
         this.userRepository = userRepository;
         this.appSecurityService = appSecurityService;
         this.constantMethod = constantMethod;
     }
-
     @Override
     public ResponseEntity<?> login(AuthenticationDto authenticationDto, HttpServletResponse response, HttpServletRequest request) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
@@ -45,7 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
             appSecurityService.login(databaseUser, request,response);
-            apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
+            apiResponseMessages.setMessage(ConstantMessages.USER_LOGGED_IN_SUCCESSFULLY.getMessage());
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
 
         } catch (Exception e) {

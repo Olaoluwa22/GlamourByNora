@@ -66,6 +66,7 @@ public class Product {
                 ", shoppingCarts=" + shoppingCarts +
                 '}';
     }
+
     public Long getId() {
         return id;
     }

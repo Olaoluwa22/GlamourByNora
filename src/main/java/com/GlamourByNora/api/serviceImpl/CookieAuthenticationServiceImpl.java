@@ -27,7 +27,6 @@ public class CookieAuthenticationServiceImpl implements CookieAuthenticationServ
         this.userRepository = userRepository;
         this.constantMethod = constantMethod;
     }
-
     @Value("${app.cookie.login}")
     private String loginCookieName;
     @Override
@@ -79,8 +78,8 @@ public class CookieAuthenticationServiceImpl implements CookieAuthenticationServ
             for (int i = 0; i < cookie.length ; i++) {
                 Cookie cookie1 = cookie[i];
                 if (cookie1.getName().equalsIgnoreCase(loginCookieName)){
-                    loggedIn = true;
                     loginCookie = cookie1;
+                    loggedIn = true;
                     break;
                 }
             }

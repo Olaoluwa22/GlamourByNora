@@ -12,7 +12,7 @@ public enum ConstantMessages {
     FOUND("Found",9),
     INCORRECT("Username or Password Incorrect!",10),
     NOT_LOGGED_IN("User not logged in...",11),
-    LOGGED_OUT("User Logged out Successfully",12),
+    LOGGED_OUT("User Logged out",12),
     ADDED_TO_CART("Added to cart", 13),
     DELETED_FROM_CART("Deleted from cart", 14),
     PROCEED("Continue",15 ),
@@ -22,7 +22,9 @@ public enum ConstantMessages {
     OTP_IS_EXPIRED("OTP is expired", 19),
     OTP_INCORRECT("OTP not correct", 20),
     NEW_PASSWORD_SAVED("New password is saved! ", 21),
-    NEW_OTP_SENT("New OTP has been sent", 22);
+    NEW_OTP_SENT("New OTP has been sent", 22),
+    USER_LOGGED_IN_SUCCESSFULLY("User logged in successfully", 23),
+    PRODUCT_DOES_NOT_EXIST("Product does not exist", 24);
 
     private String message;
     private int status;
