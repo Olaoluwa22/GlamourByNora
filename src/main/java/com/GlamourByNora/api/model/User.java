@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 @Entity
 public class User {
     @Id
@@ -33,6 +35,8 @@ public class User {
     @OneToOne(mappedBy = "user")
     @JoinColumn(name = "user_id")
     private Cart shoppingCart;
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
 
     public Long getId() {
         return id;
@@ -100,6 +104,12 @@ public class User {
     public Cart setShoppingCart(Cart shoppingCart) {
         this.shoppingCart = shoppingCart;
         return shoppingCart;
+    }
+    public List<Order> getOrders() {
+        return orders;
+    }
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 
     @Override

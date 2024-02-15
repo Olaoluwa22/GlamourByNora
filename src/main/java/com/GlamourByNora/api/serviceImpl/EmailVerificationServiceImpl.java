@@ -1,7 +1,5 @@
 package com.GlamourByNora.api.serviceImpl;
 
-import com.GlamourByNora.api.model.User;
-import com.GlamourByNora.api.response.ApiResponseMessages;
 import com.GlamourByNora.api.service.EmailVerificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -25,5 +23,18 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     }catch (MailException mailException) {
         mailException.printStackTrace();
        }
+    }
+    @Override
+    public void sendOrderConfirmationMail(String email, String confirmationText) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setSubject("Order Confirmation");
+        mailMessage.setFrom("GlamourByNora@gmail.com");
+        mailMessage.setTo(email);
+        mailMessage.setText(confirmationText);
+        try {
+            javaMailSender.send(mailMessage);
+        }catch (MailException mailException) {
+            mailException.printStackTrace();
+        }
     }
 }

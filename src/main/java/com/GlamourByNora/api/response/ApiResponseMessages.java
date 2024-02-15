@@ -8,8 +8,9 @@ public class ApiResponseMessages<G>{
         return message;
     }
 
-    public void setMessage(String message) {
+    public String setMessage(String message) {
         this.message = message;
+        return message;
     }
 
     public G getData() {

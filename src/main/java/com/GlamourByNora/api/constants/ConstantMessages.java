@@ -24,8 +24,11 @@ public enum ConstantMessages {
     NEW_PASSWORD_SAVED("New password is saved! ", 21),
     NEW_OTP_SENT("New OTP has been sent", 22),
     USER_LOGGED_IN_SUCCESSFULLY("User logged in successfully", 23),
-    PRODUCT_DOES_NOT_EXIST("Product does not exist", 24);
-
+    PRODUCT_DOES_NOT_EXIST("Product does not exist", 24),
+    TOTAL_VALUE("Total value is:", 25),
+    PROCESSING("Processing", 26),
+    CONFIRMED("Confirmed", 27),
+    DELIVERED("Delivered", 28);
     private String message;
     private int status;
 
