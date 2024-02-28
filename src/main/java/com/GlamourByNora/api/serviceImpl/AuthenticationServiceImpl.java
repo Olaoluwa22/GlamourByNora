@@ -1,9 +1,8 @@
 package com.GlamourByNora.api.serviceImpl;
 
-import com.GlamourByNora.api.constants.ConstantMessages;
-import com.GlamourByNora.api.constants.ConstantMethod;
+import com.GlamourByNora.api.util.ConstantMessages;
+import com.GlamourByNora.api.util.ConstantMethod;
 import com.GlamourByNora.api.dto.AuthenticationDto;
-import com.GlamourByNora.api.dto.UserResponseDto;
 import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;

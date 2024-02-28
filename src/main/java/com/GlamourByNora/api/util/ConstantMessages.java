@@ -1,4 +1,4 @@
-package com.GlamourByNora.api.constants;
+package com.GlamourByNora.api.util;
 
 public enum ConstantMessages {
     SUCCESS("Successful", 1),
@@ -28,7 +28,9 @@ public enum ConstantMessages {
     TOTAL_VALUE("Total value is:", 25),
     PROCESSING("Processing", 26),
     CONFIRMED("Confirmed", 27),
-    DELIVERED("Delivered", 28);
+    DELIVERED("Delivered", 28),
+    CANCELLED("Cancelled", 29);
+
     private String message;
     private int status;
 

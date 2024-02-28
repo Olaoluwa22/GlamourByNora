@@ -25,6 +25,15 @@ public class DefaultExceptionHandler {
         exceptionResponse.setData(null);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(NotAuthorizedException.class)
+    public ResponseEntity<?> NotAuthorizedException(UserNotLoggedInException exception){
+        ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();
+        exceptionResponse.setTimestamp(Instant.now());
+        exceptionResponse.setMessage("Error Occurred while initializing transaction");
+        exceptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        exceptionResponse.setData(null);
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException exception){
         ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();

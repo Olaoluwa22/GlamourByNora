@@ -1,6 +1,6 @@
 package com.GlamourByNora.api.serviceImpl;
 
-import com.GlamourByNora.api.constants.ConstantMessages;
+import com.GlamourByNora.api.util.ConstantMessages;
 import com.GlamourByNora.api.exception.exceptionHandler.UserNotFoundException;
 import com.GlamourByNora.api.exception.exceptionHandler.UserNotLoggedInException;
 import com.GlamourByNora.api.model.User;

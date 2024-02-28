@@ -1,7 +1,10 @@
 package com.GlamourByNora.api.serviceImpl;
 
-import com.GlamourByNora.api.constants.ConstantMessages;
+import com.GlamourByNora.api.InitializeTransaction.PaystackTransactionRequest;
+import com.GlamourByNora.api.InitializeTransaction.PaystackTransactionResponse;
 import com.GlamourByNora.api.dto.CartRequestDto;
+import com.GlamourByNora.api.exception.exceptionHandler.NotAuthorizedException;
+import com.GlamourByNora.api.exception.exceptionHandler.UserNotFoundException;
 import com.GlamourByNora.api.model.Order;
 import com.GlamourByNora.api.model.Product;
 import com.GlamourByNora.api.model.User;
@@ -14,17 +17,27 @@ import com.GlamourByNora.api.service.AppSecurityService;
 import com.GlamourByNora.api.service.EmailVerificationService;
 import com.GlamourByNora.api.service.ShoppingCartService;
 import com.GlamourByNora.api.util.CartItems;
-import com.GlamourByNora.api.util.GetCookieValue;
+import com.GlamourByNora.api.util.ConstantMessages;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +45,9 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
+@RestControllerAdvice
 public class ShoppingCartServiceImpl implements ShoppingCartService {
+    private static final int STATUS_CODE_OK = 200;
     @Autowired
     private AppSecurityService appSecurityService;
     @Autowired
@@ -109,11 +124,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         getTotalValue(request);
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.TOTAL_VALUE.getMessage());
-        apiResponseMessages.setData(getTotalValue(request));
+        apiResponseMessages.setData(String.valueOf(getTotalValue(request)));
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
     }
     @Override
-    public ResponseEntity<?> proceedToPayment(HttpServletRequest request) {
+    @Transactional(rollbackOn = {NullPointerException.class, NotAuthorizedException.class})
+    public ResponseEntity<?> proceedToPayment(HttpServletRequest request, PaystackTransactionRequest paystackTransactionRequest) throws NotAuthorizedException {
         appSecurityService.getLoggedInUser(request);
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
@@ -131,33 +147,27 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         User user = databaseUser.get();
-
-        createOrder(request, user);
-        makePayment();
-        logTransaction(request, user.getId());
-        updateInventory(request, user.getId());
-        emailVerificationService.sendOrderConfirmationMail(user.getEmail(), "1234567");
+        try {
+            createOrder(request, user);
+            initializeTransaction(request, paystackTransactionRequest, user);
+            logTransaction(request, user.getId());
+            updateInventory(request, user.getId());
+            emailVerificationService.sendOrderConfirmationMail(user.getEmail(), "1234567");
+        }
+        catch (NullPointerException e){
+            throw new NullPointerException("Cannot be Null");
+        }catch(NotAuthorizedException | Exception e){
+            throw new NotAuthorizedException("Error Occurred while initializing transaction");
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    private void generateNewCart(CartRequestDto cartRequestDto, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        List<CartItems> cartItems = new ArrayList<>(List.of(new CartItems(cartRequestDto.getProductId(), 1)));
-        session.setAttribute("cart", cartItems);
-    }
-    private String getTotalValue(HttpServletRequest request){
-        HttpSession session = request.getSession(false);
-        List<CartItems> cartItems = (List<CartItems>) session.getAttribute("cart");
-        double totalValue = 0;
-        for (int i = 0; i < cartItems.size(); i++) {
-            Optional<Product> databaseProduct = productRepository.findProductById(cartItems.get(i).getProductId());
-            totalValue += (databaseProduct.get().getPrice() * cartItems.get(i).getQuantity());
-        }
-        return String.valueOf(totalValue);
-    }
-    private void createOrder(HttpServletRequest request, User user){
+    private void createOrder(HttpServletRequest request, User user) throws NullPointerException{
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         HttpSession session = request.getSession(false);
         List<CartItems> cartItems = (List<CartItems>) session.getAttribute("cart");
+        if(cartItems.isEmpty()){
+            throw new NullPointerException();
+        }
         Order order = new Order();
         String orderNumber = generateRandomPrefix() + "-" + generateOrderId();
         order.setOrderNumber(orderNumber);
@@ -168,8 +178,48 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
         orderRepository.save(order);
     }
-    private ResponseEntity<?> makePayment(){
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    private PaystackTransactionResponse initializeTransaction(HttpServletRequest request, PaystackTransactionRequest paystackTransactionRequest, User user) throws Exception, NotAuthorizedException {
+        PaystackTransactionResponse paystackTransactionResponse = null;
+        Optional<Order> databaseOrder = orderRepository.findOrderByUserId(user.getId());
+        if (databaseOrder.isEmpty() || databaseOrder.get().getOrderNumber().equalsIgnoreCase("Delivered")){
+            throw new UserNotFoundException("Order Number does not exist");
+        }
+        Order order = databaseOrder.get();
+        paystackTransactionRequest.setAmount(order.getValue()*100);
+        paystackTransactionRequest.setEmail(user.getEmail());
+        paystackTransactionRequest.setReference(order.getOrderNumber());
+        try {
+            Gson gson = new Gson();
+            StringEntity postingString = new StringEntity(gson.toJson(paystackTransactionRequest));
+            CloseableHttpClient client = HttpClientBuilder.create().build();
+            HttpPost post = new HttpPost("https://api.paystack.co/transaction/initialize");
+            post.setEntity(postingString);
+            post.addHeader("Content-type", "application/json");
+            post.addHeader("Authorization", "Bearer sk_test_b5756e19ed7f96c84b253095358de89a137f8252");
+            StringBuilder result = new StringBuilder();
+            CloseableHttpResponse response = client.execute(post);
+            if (response.getStatusLine().getStatusCode() == STATUS_CODE_OK) {
+                BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
+                String line;
+                while ((line = rd.readLine()) != null) {
+                    result.append(line);
+                }
+
+            } else {
+                throw new NotAuthorizedException("Error Occurred while initializing transaction");
+            }
+            ObjectMapper mapper = new ObjectMapper();
+
+            paystackTransactionResponse = mapper.readValue(result.toString(), PaystackTransactionResponse.class);
+
+        } catch (NotAuthorizedException e) {
+            throw new NotAuthorizedException("Error Occurred while initializing transaction");
+
+        } catch (Exception ex) {
+            throw new Exception("Failure initializaing paystack transaction");
+        }
+        return paystackTransactionResponse;
     }
     private ResponseEntity<?> logTransaction(HttpServletRequest request, Long userId){
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -177,8 +227,23 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private ResponseEntity<?> updateInventory(HttpServletRequest request, Long userId){
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    private void generateNewCart(CartRequestDto cartRequestDto, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        List<CartItems> cartItems = new ArrayList<>(List.of(new CartItems(cartRequestDto.getProductId(), 1)));
+        session.setAttribute("cart", cartItems);
+    }
+    private int getTotalValue(HttpServletRequest request){
+        HttpSession session = request.getSession(false);
+        List<CartItems> cartItems = (List<CartItems>) session.getAttribute("cart");
+        int totalValue = 0;
+        for (int i = 0; i < cartItems.size(); i++) {
+            Optional<Product> databaseProduct = productRepository.findProductById(cartItems.get(i).getProductId());
+            totalValue += (databaseProduct.get().getPrice() * cartItems.get(i).getQuantity());
+        }
+        return totalValue;
+    }
     private static String generateRandomPrefix() {
-        String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         Random random = new Random();
         StringBuilder prefix = new StringBuilder();
         for (int i = 0; i < 2; i++) {

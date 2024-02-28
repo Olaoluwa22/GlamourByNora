@@ -1,6 +1,6 @@
 package com.GlamourByNora.api.serviceImpl;
 
-import com.GlamourByNora.api.constants.ConstantMessages;
+import com.GlamourByNora.api.util.ConstantMessages;
 import com.GlamourByNora.api.dto.ProductDto;
 import com.GlamourByNora.api.dto.ProductResponseDto;
 import com.GlamourByNora.api.model.Product;

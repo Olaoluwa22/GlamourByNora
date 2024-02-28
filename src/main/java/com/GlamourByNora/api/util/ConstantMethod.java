@@ -1,4 +1,4 @@
-package com.GlamourByNora.api.constants;
+package com.GlamourByNora.api.util;
 
 import com.GlamourByNora.api.dto.UserResponseDto;
 import com.GlamourByNora.api.model.User;

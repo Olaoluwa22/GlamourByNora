@@ -1,6 +1,8 @@
 package com.GlamourByNora.api.controller;
 
+import com.GlamourByNora.api.InitializeTransaction.PaystackTransactionRequest;
 import com.GlamourByNora.api.dto.CartRequestDto;
+import com.GlamourByNora.api.exception.exceptionHandler.NotAuthorizedException;
 import com.GlamourByNora.api.service.ShoppingCartService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -26,7 +28,7 @@ public class ShoppingCartController {
         return shoppingCartService.checkout(request);
     }
     @PostMapping("/proceed-to-payment")
-    public ResponseEntity<?> proceedToPayment(HttpServletRequest request){
-        return shoppingCartService.proceedToPayment(request);
+    public ResponseEntity<?> proceedToPayment(HttpServletRequest request, PaystackTransactionRequest paystackTransactionRequest) throws NotAuthorizedException {
+        return shoppingCartService.proceedToPayment(request, paystackTransactionRequest);
     }
 }

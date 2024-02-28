@@ -1,6 +1,6 @@
 package com.GlamourByNora.api.serviceImpl;
 
-import com.GlamourByNora.api.constants.ConstantMessages;
+import com.GlamourByNora.api.util.ConstantMessages;
 import com.GlamourByNora.api.dto.UserDto;
 import com.GlamourByNora.api.dto.UserResponseDto;
 import com.GlamourByNora.api.exception.exceptionHandler.UserNotLoggedInException;
@@ -8,11 +8,8 @@ import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
 import com.GlamourByNora.api.service.AppSecurityService;
-import com.GlamourByNora.api.service.AuthenticationService;
 import com.GlamourByNora.api.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.hibernate.internal.build.AllowPrintStacktrace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

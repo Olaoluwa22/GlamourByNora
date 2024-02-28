@@ -1,8 +1,7 @@
 package com.GlamourByNora.api.serviceImpl;
 
-import com.GlamourByNora.api.constants.ConstantMessages;
-import com.GlamourByNora.api.constants.ConstantMethod;
-import com.GlamourByNora.api.dto.UserResponseDto;
+import com.GlamourByNora.api.util.ConstantMessages;
+import com.GlamourByNora.api.util.ConstantMethod;
 import com.GlamourByNora.api.exception.exceptionHandler.UserNotLoggedInException;
 import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.UserRepository;
@@ -11,7 +10,6 @@ import com.GlamourByNora.api.service.CookieAuthenticationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

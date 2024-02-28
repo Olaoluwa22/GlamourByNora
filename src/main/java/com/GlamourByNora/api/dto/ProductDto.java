@@ -1,11 +1,8 @@
 package com.GlamourByNora.api.dto;
 
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
-import java.time.Instant;
 import java.util.List;
 
 public class ProductDto {
@@ -25,7 +22,7 @@ public class ProductDto {
     @NotNull
     private String description;
     @NotNull
-    private double price;
+    private int price;
     @NotNull
     private int stockQuantity;
     @NotNull
@@ -96,11 +93,11 @@ public class ProductDto {
         this.description = description;
     }
 
-    public double getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 

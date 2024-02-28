@@ -25,7 +25,7 @@ public class Product {
     private String gender;
     private String description;
     @Column(length = 20, nullable = false)
-    private double price;
+    private int price;
     @Column(length = 20, nullable = false)
     private int stockQuantity;
     @Column(length = 255, nullable = false)
@@ -115,10 +115,10 @@ public class Product {
     public void setDescription(String description) {
         this.description = description;
     }
-    public double getPrice() {
+    public int getPrice() {
         return price;
     }
-    public void setPrice(double price) {
+    public void setPrice(int price) {
         this.price = price;
     }
     public int getStockQuantity() {

@@ -13,7 +13,7 @@ public class Order {
     @NotNull
     private int quantityOfProduct;
     @NotNull
-    private String value;
+    private int value;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -38,10 +38,10 @@ public class Order {
     public void setQuantityOfProduct(int quantityOfProduct) {
         this.quantityOfProduct = quantityOfProduct;
     }
-    public String getValue() {
+    public int getValue() {
         return value;
     }
-    public void setValue(String value) {
+    public void setValue(int value) {
         this.value = value;
     }
     public String getStatus() {
