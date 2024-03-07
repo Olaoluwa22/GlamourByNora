@@ -18,16 +18,4 @@ public class GetCookieValue {
         }
         return value.getValue();
     }
-    public String getLoggedInUserValue(HttpServletRequest request){
-        Cookie[] cookie = request.getCookies();
-        Cookie value = null;
-        for (int i = 0; i < cookie.length; i++) {
-            Cookie cookies = cookie[i];
-            if (cookies.getName().equalsIgnoreCase(loginCookieName)) {
-                value = cookies;
-                break;
-            }
-        }
-        return value.getValue();
-    }
 }

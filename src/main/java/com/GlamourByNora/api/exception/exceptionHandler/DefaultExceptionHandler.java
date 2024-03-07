@@ -26,7 +26,7 @@ public class DefaultExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(NotAuthorizedException.class)
-    public ResponseEntity<?> NotAuthorizedException(UserNotLoggedInException exception){
+    public ResponseEntity<?> NotAuthorizedException(NotAuthorizedException exception){
         ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();
         exceptionResponse.setTimestamp(Instant.now());
         exceptionResponse.setMessage("Error Occurred while initializing transaction");

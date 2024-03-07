@@ -2,6 +2,9 @@ package com.GlamourByNora.api.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
+import java.time.Instant;
+
 @Entity
 @Table(name = "`order`")
 public class Order {
@@ -9,7 +12,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
-    private String orderNumber;
+    private String reference;
     @NotNull
     private int quantityOfProduct;
     @NotNull
@@ -19,6 +22,7 @@ public class Order {
     private User user;
     @NotNull
     private String status;
+    private Instant createdAt;
 
     public Long getId() {
         return id;
@@ -26,11 +30,11 @@ public class Order {
     public void setId(Long id) {
         this.id = id;
     }
-    public String getOrderNumber() {
-        return orderNumber;
+    public String getReference() {
+        return reference;
     }
-    public void setOrderNumber(String orderNumber) {
-        this.orderNumber = orderNumber;
+    public void setReference(String reference) {
+        this.reference = reference;
     }
     public int getQuantityOfProduct() {
         return quantityOfProduct;
@@ -56,15 +60,22 @@ public class Order {
     public void setUser(User user) {
         this.user = user;
     }
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
 
     @Override
     public String toString() {
         return "Order{" +
                 "id=" + id +
-                ", orderNumber='" + orderNumber + '\'' +
+                ", reference='" + reference + '\'' +
                 ", quantityOfProduct=" + quantityOfProduct +
-                ", value='" + value + '\'' +
+                ", value=" + value +
                 ", status='" + status + '\'' +
+                ", createdAt=" + createdAt +
                 '}';
     }
 }

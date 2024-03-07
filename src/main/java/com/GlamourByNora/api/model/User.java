@@ -125,7 +125,7 @@ public class User {
                 ", phone_no=" + phone_no +
                 ", password='" + password + '\'' +
                 ", deleted=" + deleted +
-                ", shoppingCart=" + shoppingCart +
+                ", orders=" + orders +
                 '}';
     }
 }

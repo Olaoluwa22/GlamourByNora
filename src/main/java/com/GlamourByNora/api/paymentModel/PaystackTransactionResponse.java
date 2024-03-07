@@ -1,5 +1,6 @@
-package com.GlamourByNora.api.InitializeTransaction;
+package com.GlamourByNora.api.paymentModel;
 
+import com.GlamourByNora.api.util.Data;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 

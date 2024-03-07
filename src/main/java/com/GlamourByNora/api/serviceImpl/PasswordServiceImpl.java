@@ -96,7 +96,7 @@ public class PasswordServiceImpl implements PasswordService {
             OTP otp = new OTP();
             otp.setOtp(String.valueOf(ThreadLocalRandom.current().nextInt(100000, 999999)));
             otp.setCreatedAt(Instant.now());
-            otp.setExpiresAt(Instant.now().plusSeconds(70));
+            otp.setExpiresAt(Instant.now().plusSeconds(80));
             otp.setUserId(user.getId());
             otp.setExpired(false);
             emailVerificationService.sendVerificationCode(user.getEmail(), otp.getOtp());

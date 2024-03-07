@@ -27,9 +27,10 @@ public enum ConstantMessages {
     PRODUCT_DOES_NOT_EXIST("Product does not exist", 24),
     TOTAL_VALUE("Total value is:", 25),
     PROCESSING("Processing", 26),
-    CONFIRMED("Confirmed", 27),
+    PAID("Paid", 27),
     DELIVERED("Delivered", 28),
-    CANCELLED("Cancelled", 29);
+    CANCELLED("Cancelled", 29),
+    TRANSACTION_SUCCESSFUL("Transaction Successful",30 );
 
     private String message;
     private int status;
