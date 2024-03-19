@@ -4,7 +4,7 @@ public enum ConstantMessages {
     SUCCESS("Successful", 1),
     FAILED("Failed", 2),
     CREATED("Created Successfully", 3),
-    UNAUTHORIZED("Not eligible", 4),
+    UNAUTHORIZED("Not Authorized", 4),
     NOT_FOUND("Cannot be found",5),
     UPDATED("Successfully Updated",6),
     EXIST("Email already in use",7),
@@ -15,7 +15,7 @@ public enum ConstantMessages {
     LOGGED_OUT("User Logged out",12),
     ADDED_TO_CART("Added to cart", 13),
     DELETED_FROM_CART("Deleted from cart", 14),
-    PROCEED("Continue",15 ),
+    PROCEED("proceed",15 ),
     INCORRECT_PASSWORD("Password Incorrect", 16),
     CHECK_INPUT("Input Mismatch", 17),
     INVALID_EMAIL("Email not valid", 18),
@@ -43,15 +43,12 @@ public enum ConstantMessages {
     public String getMessage() {
         return message;
     }
-
     public void setMessage(String message) {
         this.message = message;
     }
-
     public int getStatus() {
         return status;
     }
-
     public void setStatus(int status) {
         this.status = status;
     }

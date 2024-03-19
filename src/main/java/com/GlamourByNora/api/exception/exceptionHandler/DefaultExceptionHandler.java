@@ -21,18 +21,18 @@ public class DefaultExceptionHandler {
         ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();
         exceptionResponse.setTimestamp(Instant.now());
         exceptionResponse.setMessage("User Not Logged In...");
-        exceptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        exceptionResponse.setStatus(HttpStatus.FORBIDDEN.value());
         exceptionResponse.setData(null);
-        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
     }
     @ExceptionHandler(NotAuthorizedException.class)
-    public ResponseEntity<?> NotAuthorizedException(NotAuthorizedException exception){
+    public ResponseEntity<?> notAuthorizedException(NotAuthorizedException exception){
         ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();
         exceptionResponse.setTimestamp(Instant.now());
         exceptionResponse.setMessage("Error Occurred while initializing transaction");
-        exceptionResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        exceptionResponse.setStatus(HttpStatus.FORBIDDEN.value());
         exceptionResponse.setData(null);
-        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException exception){
@@ -41,21 +41,30 @@ public class DefaultExceptionHandler {
         exceptionResponse.setMessage("Argument not valid...");
         exceptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         List<FieldError> fieldErrorList = exception.getFieldErrors();
-        List<Map<String,String>> list = new ArrayList<>();
+        List<Map<String,String>> listOfError = new ArrayList<>();
         for (FieldError fieldError: fieldErrorList) {
-            Map<String,String> err = new HashMap<>();
-            err.put("field", fieldError.getField());
-            err.put("message", fieldError.getDefaultMessage());
-            list.add(err);
+            Map<String,String> error = new HashMap<>();
+            error.put("field", fieldError.getField());
+            error.put("message", fieldError.getDefaultMessage());
+            listOfError.add(error);
         }
-        exceptionResponse.setData(list);
+        exceptionResponse.setData(listOfError);
         return ResponseEntity.badRequest().body(exceptionResponse);
     }
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<?> UserNotFoundException(UserNotFoundException userNotFound){
+    public ResponseEntity<?> userNotFoundException(UserNotFoundException userNotFound){
         ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();
         exceptionResponse.setTimestamp(Instant.now());
         exceptionResponse.setMessage("User Not Found...");
+        exceptionResponse.setData(null);
+        exceptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<?> orderNotFoundException(OrderNotFoundException orderNotFound){
+        ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();
+        exceptionResponse.setTimestamp(Instant.now());
+        exceptionResponse.setMessage("Order Not Found...");
         exceptionResponse.setData(null);
         exceptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);

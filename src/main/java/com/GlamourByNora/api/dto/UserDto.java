@@ -7,11 +7,11 @@ public class UserDto {
     @NotBlank
     @NotNull
     @NotEmpty
-    private String firstname;
+    private String firstName;
     @NotBlank
     @NotNull
     @NotEmpty
-    private String lastname;
+    private String lastName;
     @NotBlank
     @NotNull
     @NotEmpty
@@ -31,92 +31,74 @@ public class UserDto {
     @NotBlank
     private String password;
     @NotNull
-    private Long phone_no;
+    private Long phoneNumber;
 
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
-
-    public String getFirstname() {
-        return firstname;
+    public String getFirstName() {
+        return firstName;
     }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
-
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
-
     public String getCountry() {
         return country;
     }
-
     public void setCountry(String country) {
         this.country = country;
     }
-
     public String getState() {
         return state;
     }
-
     public void setState(String state) {
         this.state = state;
     }
-
     public String getAddress() {
         return address;
     }
-
     public void setAddress(String address) {
         this.address = address;
     }
-
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
-
     public String getPassword() {
         return password;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public Long getPhone_no() {
-        return phone_no;
+    public Long getPhoneNumber() {
+        return phoneNumber;
     }
-
-    public void setPhone_no(Long phone_no) {
-        this.phone_no = phone_no;
+    public void setPhoneNumber(Long phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
-
     @Override
     public String toString() {
         return "UserDto{" +
                 "id=" + id +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", country='" + country + '\'' +
                 ", state='" + state + '\'' +
                 ", address='" + address + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", phone_no=" + phone_no +
+                ", phoneNumber=" + phoneNumber +
                 '}';
     }
 }

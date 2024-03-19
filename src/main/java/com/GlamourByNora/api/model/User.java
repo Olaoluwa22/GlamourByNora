@@ -13,9 +13,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(length = 50, nullable = false)
-    private String firstname;
+    private String firstName;
     @Column(length = 50, nullable = false)
-    private String lastname;
+    private String lastName;
     @Column(length = 50, nullable = false)
     private String country;
     @Column(length = 50, nullable = false)
@@ -26,7 +26,7 @@ public class User {
     @Email
     private String email;
     @Column(length = 13, nullable = false)
-    private Long phone_no;
+    private Long phoneNumber;
     @Column(length = 50, nullable = false)
     @Size(min = 8)
     @Pattern(regexp="[a-zA-Z0-9]{8,}")
@@ -44,17 +44,17 @@ public class User {
     public void setId(Long id) {
         this.id = id;
     }
-    public String getFirstname() {
-        return firstname;
+    public String getFirstName() {
+        return firstName;
     }
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
     public String getCountry() {
         return country;
@@ -80,11 +80,11 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
-    public Long getPhone_no() {
-        return phone_no;
+    public Long getPhoneNumber() {
+        return phoneNumber;
     }
-    public void setPhone_no(Long phone_no) {
-        this.phone_no = phone_no;
+    public void setPhoneNumber(Long phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
     public String getPassword() {
         return password;
@@ -116,13 +116,13 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", country='" + country + '\'' +
                 ", state='" + state + '\'' +
                 ", address='" + address + '\'' +
                 ", email='" + email + '\'' +
-                ", phone_no=" + phone_no +
+                ", phoneNumber=" + phoneNumber +
                 ", password='" + password + '\'' +
                 ", deleted=" + deleted +
                 ", orders=" + orders +

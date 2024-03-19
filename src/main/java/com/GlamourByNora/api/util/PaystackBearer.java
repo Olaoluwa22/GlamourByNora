@@ -6,7 +6,6 @@ public enum PaystackBearer {
     PaystackBearer(String message){
         this.message =message;
     }
-
     public String getMessage() {
         return message;
     }

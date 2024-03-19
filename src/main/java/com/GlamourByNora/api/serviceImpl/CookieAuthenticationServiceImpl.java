@@ -45,8 +45,7 @@ public class CookieAuthenticationServiceImpl implements CookieAuthenticationServ
                 apiResponseMessages.setMessage(ConstantMessages.UNAUTHORIZED.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.UNAUTHORIZED);
             }
-            for (int i = 0; i < cookie.length; i++) {
-                Cookie loginCookie = cookie[i];
+            for (Cookie loginCookie : cookie) {
                 if (loginCookie.getName().equalsIgnoreCase(loginCookieName)) {
                     loginCookie.setMaxAge(0);
                     loginCookie.setPath("/");
@@ -66,25 +65,24 @@ public class CookieAuthenticationServiceImpl implements CookieAuthenticationServ
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         Cookie[] cookie = request.getCookies();
-        boolean loggedIn = false;
+        boolean isUserLoggedIn = false;
         Cookie loginCookie = null;
 
         if (cookie == null){
             throw new UserNotLoggedInException("User not Logged In...");
         }
         try{
-            for (int i = 0; i < cookie.length ; i++) {
-                Cookie cookie1 = cookie[i];
-                if (cookie1.getName().equalsIgnoreCase(loginCookieName)){
-                    loggedIn = true;
+            for (Cookie cookie1 : cookie) {
+                if (cookie1.getName().equalsIgnoreCase(loginCookieName)) {
+                    isUserLoggedIn = true;
                     loginCookie = cookie1;
                     break;
                 }
             }
-            if (!loggedIn){
+            if (!isUserLoggedIn){
                 throw new UserNotLoggedInException("User not Logged In...");
             }
-            Optional<User> cookieOwner = userRepository.findByEmailAndDeleted(loginCookie.getValue(), false);
+            Optional<User> cookieOwner = userRepository.findUserByEmailAndDeleted(loginCookie.getValue(), false);
             if (cookieOwner.isEmpty()){
                 throw new UserNotLoggedInException("User not Logged In...");
             }

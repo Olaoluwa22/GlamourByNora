@@ -37,7 +37,7 @@ public class ProductController {
         return productService.updateProductById(id, productDto, request);
     }
     @DeleteMapping("/product/delete/{id}")
-    public ResponseEntity<?> deleteUserById(@PathVariable( name = "id") Long productId, HttpServletRequest request){
+    public ResponseEntity<?> deleteProductById(@PathVariable( name = "id") Long productId, HttpServletRequest request){
         return productService.deleteProductById(productId, request);
     }
 }

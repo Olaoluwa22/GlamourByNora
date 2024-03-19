@@ -7,16 +7,13 @@ public class ApiResponseMessages<G>{
     public String getMessage() {
         return message;
     }
-
     public String setMessage(String message) {
         this.message = message;
         return message;
     }
-
     public G getData() {
         return data;
     }
-
     public void setData(G data) {
         this.data = data;
     }

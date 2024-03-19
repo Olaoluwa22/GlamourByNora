@@ -6,18 +6,18 @@ import org.apache.commons.logging.Log;
 import org.apache.tomcat.util.http.parser.Authorization;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class VerificationData {
+public class PaystackVerificationData {
     private String currency;
-
     private String transaction_date;
     private String status;
     private String reference;
     private String gateway_response;
     private String channel;
     private String ip_address;
+    private String amount;
     private Log log;
     private Authorization authorization;
-    public VerificationData(){}
+    public PaystackVerificationData(){}
 
     public String getCurrency() {
         return currency;
@@ -73,6 +73,12 @@ public class VerificationData {
     public void setAuthorization(Authorization authorization) {
         this.authorization = authorization;
     }
+    public String getAmount() {
+        return amount;
+    }
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
 
     @Override
     public String toString() {
@@ -84,6 +90,7 @@ public class VerificationData {
                 ", gateway_response='" + gateway_response + '\'' +
                 ", channel='" + channel + '\'' +
                 ", ip_address='" + ip_address + '\'' +
+                ", amount='" + amount + '\'' +
                 ", authorization=" + authorization +
                 '}';
     }

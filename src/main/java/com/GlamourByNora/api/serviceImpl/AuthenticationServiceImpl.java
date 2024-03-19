@@ -31,12 +31,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         try {
-            Optional<User> byEmail = userRepository.findByEmailAndDeleted(authenticationDto.getUsername(), false);
-            if (byEmail.isEmpty()) {
+            Optional<User> optionalDatabaseUser = userRepository.findUserByEmailAndDeleted(authenticationDto.getUsername(), false);
+            if (optionalDatabaseUser.isEmpty()) {
                 apiResponseMessages.setMessage(ConstantMessages.INCORRECT.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
-            User databaseUser = byEmail.get();
+            User databaseUser = optionalDatabaseUser.get();
             if (!authenticationDto.getPassword().equals(databaseUser.getPassword())) {
                 apiResponseMessages.setMessage(ConstantMessages.INCORRECT.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);

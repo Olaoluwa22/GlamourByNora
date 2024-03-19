@@ -12,7 +12,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     @Autowired
     private JavaMailSender javaMailSender;
     @Override
-    public void sendVerificationCode(String email, String otp) {
+    public void sendOTP(String email, String otp) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setSubject("OTP Verification");
         mailMessage.setFrom("GlamourByNora@gmail.com");
@@ -25,12 +25,12 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
        }
     }
     @Override
-    public void sendOrderConfirmationMail(String email, String confirmationText) {
+    public void sendOrderConfirmationMail(String email, String confirmationMail) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setSubject("Order Confirmation");
         mailMessage.setFrom("GlamourByNora@gmail.com");
         mailMessage.setTo(email);
-        mailMessage.setText(confirmationText);
+        mailMessage.setText(confirmationMail);
         try {
             javaMailSender.send(mailMessage);
         }catch (MailException mailException) {

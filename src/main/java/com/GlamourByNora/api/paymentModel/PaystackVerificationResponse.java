@@ -1,6 +1,6 @@
 package com.GlamourByNora.api.paymentModel;
 
-import com.GlamourByNora.api.util.VerificationData;
+import com.GlamourByNora.api.util.PaystackVerificationData;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class PaystackVerificationResponse {
     private String status;
     private String message;
-    private VerificationData verificationData;
+    private PaystackVerificationData paystackVerificationData;
 
     public PaystackVerificationResponse(){}
     public String getStatus() {
@@ -24,11 +24,11 @@ public class PaystackVerificationResponse {
     public void setMessage(String message) {
         this.message = message;
     }
-    public VerificationData getVerificationData() {
-        return verificationData;
+    public PaystackVerificationData getPaystackVerificationData() {
+        return paystackVerificationData;
     }
-    public void setVerificationData(VerificationData verificationData) {
-        this.verificationData = verificationData;
+    public void setPaystackVerificationData(PaystackVerificationData paystackVerificationData) {
+        this.paystackVerificationData = paystackVerificationData;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class PaystackVerificationResponse {
         return "PaystackVerificationResponse{" +
                 "status='" + status + '\'' +
                 ", message='" + message + '\'' +
-                ", verificationData=" + verificationData +
+                ", paystackVerificationData=" + paystackVerificationData +
                 '}';
     }
 }

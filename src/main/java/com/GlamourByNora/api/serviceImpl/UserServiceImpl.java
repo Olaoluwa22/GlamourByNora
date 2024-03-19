@@ -35,16 +35,16 @@ public class UserServiceImpl implements UserService {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         User user = new User();
-        user.setFirstname(userDto.getFirstname());
-        user.setLastname(userDto.getLastname());
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
         user.setCountry(userDto.getCountry());
         user.setState(userDto.getState());
         user.setAddress(userDto.getAddress());
         user.setEmail(userDto.getEmail());
         user.setPassword(userDto.getPassword());
-        user.setPhone_no(userDto.getPhone_no());
+        user.setPhoneNumber(userDto.getPhoneNumber());
         try {
-            Optional<User> userInDatabase = userRepository.findByEmail(user.getEmail());
+            Optional<User> userInDatabase = userRepository.findUserByEmail(user.getEmail());
             if (userInDatabase.isPresent()) {
                 apiResponseMessages.setMessage(ConstantMessages.EXIST.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
@@ -63,16 +63,16 @@ public class UserServiceImpl implements UserService {
         ApiResponseMessages< List<UserResponseDto>> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         try {
-            List<User> allUser = userRepository.findByDeleted(false);
+            List<User> allUser = userRepository.findUserByDeleted(false);
             List<UserResponseDto> responseData = new ArrayList<>();
             allUser.forEach(user -> {
                 UserResponseDto userResponseDto = new UserResponseDto();
-                userResponseDto.setFirstname(user.getFirstname());
-                userResponseDto.setLastname(user.getLastname());
+                userResponseDto.setFirstName(user.getFirstName());
+                userResponseDto.setLastName(user.getLastName());
                 userResponseDto.setCountry(user.getCountry());
                 userResponseDto.setState(user.getState());
                 userResponseDto.setEmail(user.getEmail());
-                userResponseDto.setPhone_no(user.getPhone_no());
+                userResponseDto.setPhoneNumber(user.getPhoneNumber());
                 responseData.add(userResponseDto);
             });
             apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
@@ -99,12 +99,12 @@ public class UserServiceImpl implements UserService {
                 apiResponseMessages.setMessage(ConstantMessages.NOT_FOUND.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
-            userResponseDto.setFirstname(databaseUser.getFirstname());
-            userResponseDto.setLastname(databaseUser.getLastname());
+            userResponseDto.setFirstName(databaseUser.getFirstName());
+            userResponseDto.setLastName(databaseUser.getLastName());
             userResponseDto.setCountry(databaseUser.getCountry());
             userResponseDto.setState(databaseUser.getState());
             userResponseDto.setEmail(databaseUser.getEmail());
-            userResponseDto.setPhone_no(databaseUser.getPhone_no());
+            userResponseDto.setPhoneNumber(databaseUser.getPhoneNumber());
             apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
             return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
         }catch (Exception ex){
@@ -120,16 +120,16 @@ public class UserServiceImpl implements UserService {
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         Pageable pageable = PageRequest.of(page,size);
         try {
-            Page<User> allUser = userRepository.findByDeletedFalse(pageable);
+            Page<User> allUser = userRepository.findUserByDeletedFalse(pageable);
             List<UserResponseDto> responseData = new ArrayList<>();
             allUser.forEach(user -> {
                 UserResponseDto userResponseDto = new UserResponseDto();
-                userResponseDto.setFirstname(user.getFirstname());
-                userResponseDto.setLastname(user.getLastname());
+                userResponseDto.setFirstName(user.getFirstName());
+                userResponseDto.setLastName(user.getLastName());
                 userResponseDto.setCountry(user.getCountry());
                 userResponseDto.setState(user.getState());
                 userResponseDto.setEmail(user.getEmail());
-                userResponseDto.setPhone_no(user.getPhone_no());
+                userResponseDto.setPhoneNumber(user.getPhoneNumber());
                 responseData.add(userResponseDto);
             });
             apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
@@ -152,14 +152,14 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
             User databaseUser =userInDatabase.get();
-            databaseUser.setFirstname(userDto.getFirstname());
-            databaseUser.setLastname(userDto.getLastname());
+            databaseUser.setFirstName(userDto.getFirstName());
+            databaseUser.setLastName(userDto.getLastName());
             databaseUser.setCountry(userDto.getCountry());
             databaseUser.setState(userDto.getState());
             databaseUser.setAddress(userDto.getAddress());
             databaseUser.setEmail(userDto.getEmail());
             databaseUser.setPassword(userDto.getPassword());
-            databaseUser.setPhone_no(userDto.getPhone_no());
+            databaseUser.setPhoneNumber(userDto.getPhoneNumber());
             userRepository.save(databaseUser);
             apiResponseMessages.setMessage(ConstantMessages.UPDATED.getMessage());
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);

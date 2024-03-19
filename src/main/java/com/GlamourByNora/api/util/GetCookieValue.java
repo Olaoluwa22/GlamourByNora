@@ -9,8 +9,7 @@ public class GetCookieValue {
     public String getCookieValue(HttpServletRequest request){
         Cookie[] cookie = request.getCookies();
         Cookie value = null;
-        for (int i = 0; i < cookie.length; i++) {
-            Cookie cookies = cookie[i];
+        for (Cookie cookies : cookie) {
             if (cookies.getName().equalsIgnoreCase("userEmail")) {
                 value = cookies;
                 break;

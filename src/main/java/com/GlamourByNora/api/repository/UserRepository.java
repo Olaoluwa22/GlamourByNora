@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User,Long> {
-    Optional<User> findByEmail(String email);
-    List<User> findByDeleted(boolean deleted);
-    Page<User> findByDeletedFalse(Pageable pageable);
-    Optional<User> findByEmailAndDeleted(String email, boolean deleted);
+    Optional<User> findUserByEmail(String email);
+    List<User> findUserByDeleted(boolean deleted);
+    Page<User> findUserByDeletedFalse(Pageable pageable);
+    Optional<User> findUserByEmailAndDeleted(String email, boolean deleted);
 }

@@ -17,7 +17,6 @@ public class OrderReference {
         return prefix.toString();
     }
     private static String generateOrderId() {
-        String randomNumber = String.valueOf(ThreadLocalRandom.current().nextInt(100000, 999999));
-        return randomNumber;
+        return String.valueOf(ThreadLocalRandom.current().nextInt(100000, 999999));
     }
 }

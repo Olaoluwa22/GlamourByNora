@@ -54,7 +54,7 @@ public class PasswordServiceImpl implements PasswordService {
                     break;
                 }
             }
-            Optional<User> databaseUser = userRepository.findByEmail(loggedInUser.getValue());
+            Optional<User> databaseUser = userRepository.findUserByEmail(loggedInUser.getValue());
             if (databaseUser.isEmpty()){
                 apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -82,7 +82,7 @@ public class PasswordServiceImpl implements PasswordService {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         try {
-            Optional<User> databaseUser = userRepository.findByEmail(forgetPasswordDto.getEmail());
+            Optional<User> databaseUser = userRepository.findUserByEmail(forgetPasswordDto.getEmail());
             if (databaseUser.isEmpty()) {
                 apiResponseMessages.setMessage(ConstantMessages.INVALID_EMAIL.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
@@ -99,7 +99,7 @@ public class PasswordServiceImpl implements PasswordService {
             otp.setExpiresAt(Instant.now().plusSeconds(80));
             otp.setUserId(user.getId());
             otp.setExpired(false);
-            emailVerificationService.sendVerificationCode(user.getEmail(), otp.getOtp());
+            emailVerificationService.sendOTP(user.getEmail(), otp.getOtp());
             otpRepository.save(otp);
         }catch (NullPointerException exception){
             exception.getMessage();
@@ -138,7 +138,7 @@ public class PasswordServiceImpl implements PasswordService {
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         GetCookieValue cookieValue = new GetCookieValue();
         try {
-            Optional<User> databaseUser = userRepository.findByEmail(cookieValue.getCookieValue(request));
+            Optional<User> databaseUser = userRepository.findUserByEmail(cookieValue.getCookieValue(request));
             if (databaseUser.isEmpty()) {
                 apiResponseMessages.setMessage(ConstantMessages.INVALID_EMAIL.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
@@ -150,7 +150,7 @@ public class PasswordServiceImpl implements PasswordService {
             otp.setExpiresAt(Instant.now().plusSeconds(70));
             otp.setUserId(user.getId());
             otp.setExpired(false);
-            emailVerificationService.sendVerificationCode(user.getEmail(), otp.getOtp());
+            emailVerificationService.sendOTP(user.getEmail(), otp.getOtp());
             otpRepository.save(otp);
             apiResponseMessages.setMessage(ConstantMessages.NEW_OTP_SENT.getMessage());
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
@@ -165,7 +165,7 @@ public class PasswordServiceImpl implements PasswordService {
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         GetCookieValue cookieValue = new GetCookieValue();
         try {
-            Optional<User> databaseUser = userRepository.findByEmail(cookieValue.getCookieValue(request));
+            Optional<User> databaseUser = userRepository.findUserByEmail(cookieValue.getCookieValue(request));
             if (databaseUser.isEmpty()) {
                 apiResponseMessages.setMessage(ConstantMessages.INVALID_EMAIL.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);

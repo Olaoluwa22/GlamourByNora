@@ -2,6 +2,7 @@ package com.GlamourByNora.api.serviceImpl;
 
 import com.GlamourByNora.api.dto.CartRequestDto;
 import com.GlamourByNora.api.exception.exceptionHandler.NotAuthorizedException;
+import com.GlamourByNora.api.exception.exceptionHandler.OrderNotFoundException;
 import com.GlamourByNora.api.exception.exceptionHandler.UserNotFoundException;
 import com.GlamourByNora.api.model.Order;
 import com.GlamourByNora.api.model.Product;
@@ -141,7 +142,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 break;
             }
         }
-        Optional<User> databaseUser = userRepository.findByEmail(value.getValue());
+        Optional<User> databaseUser = userRepository.findUserByEmail(value.getValue());
         if (databaseUser.isEmpty()) {
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -170,12 +171,17 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
               break;
           }
       }
-      Optional<User> databaseUser = userRepository.findByEmail(value.getValue());
+      Optional<User> databaseUser = userRepository.findUserByEmail(value.getValue());
       if (databaseUser.isEmpty()) {
           return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
       }
       User user = databaseUser.get();
-      PaystackVerificationResponse verificationResponse = null;
+        Optional<Order> databaseOrder = orderRepository.findOrderByUserId(user.getId());
+        if (databaseOrder.isEmpty() || !databaseOrder.get().getStatus().equalsIgnoreCase("Processing")){
+            return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        Order order = databaseOrder.get();
+        PaystackVerificationResponse verificationResponse = null;
       try {
           CloseableHttpClient client = HttpClientBuilder.create().build();
           HttpGet request = new HttpGet("https://api.paystack.co/transaction/verify/" + reference);
@@ -197,16 +203,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
           verificationResponse = mapper.readValue(result.toString(), PaystackVerificationResponse.class);
           if (verificationResponse == null || verificationResponse.getStatus().equals("false")) {
               throw new InterruptedException("An error occurred while verifying payment");
-          } else if (verificationResponse.getVerificationData().getStatus().equals("success")) {
+          } else if (!verificationResponse.getPaystackVerificationData().getAmount().equals(String.valueOf(order.getValue()))) {
+              throw new NumberFormatException("Amount paid does not equal order value");
+          } else if (verificationResponse.getPaystackVerificationData().getStatus().equals("success")) {
               Update update = new Update();
-              update.updateOrder(user);
+              update.updateOrder(user, verificationResponse.getPaystackVerificationData().getTransaction_date());
               update.updateInventory(httpRequest);
               HttpSession session = httpRequest.getSession(false);
               session.invalidate();
               apiResponseMessages.setMessage(ConstantMessages.TRANSACTION_SUCCESSFUL.getMessage());
               return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
           }
-      } catch (InterruptedException | IOException ex) {
+      } catch (InterruptedException | IOException | NumberFormatException | OrderNotFoundException ex) {
           throw new InterruptedException("Internal server error");
       }
       return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -220,7 +228,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
         Order order = new Order();
         order.setReference(new OrderReference().generateOrderReference());
-        order.setQuantityOfProduct(cartItems.size());
+        order.setQuantityOfProductsOrdered(cartItems.size());
         order.setStatus(apiResponseMessages.setMessage(ConstantMessages.PROCESSING.getMessage()));
         order.setValue(validateQuantityAndGetTotalValue(request));
         order.setUser(user);

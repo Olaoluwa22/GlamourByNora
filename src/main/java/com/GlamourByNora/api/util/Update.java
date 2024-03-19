@@ -1,6 +1,6 @@
 package com.GlamourByNora.api.util;
 
-import com.GlamourByNora.api.exception.exceptionHandler.UserNotFoundException;
+import com.GlamourByNora.api.exception.exceptionHandler.OrderNotFoundException;
 import com.GlamourByNora.api.model.Order;
 import com.GlamourByNora.api.model.Product;
 import com.GlamourByNora.api.model.User;
@@ -23,21 +23,22 @@ public class Update {
         this.productRepository = productRepository;
     }
 
-    public void updateOrder(User user){
-        Optional<Order> databaseOrder = orderRepository.findOrderByUserId(user.getId());
-        if (databaseOrder.isEmpty() || databaseOrder.get().getStatus().equalsIgnoreCase("Paid") || databaseOrder.get().getStatus().equalsIgnoreCase("Delivered")){
-            throw new UserNotFoundException("Invalid Order Number");
+    public void updateOrder(User user, String transactionDate) throws OrderNotFoundException {
+        Optional<Order> optionalDatabaseOrder = orderRepository.findOrderByUserId(user.getId());
+        if (optionalDatabaseOrder.isEmpty() || optionalDatabaseOrder.get().getStatus().equalsIgnoreCase("Paid") || optionalDatabaseOrder.get().getStatus().equalsIgnoreCase("Delivered")){
+            throw new OrderNotFoundException("Invalid Order Number");
         }
-        Order order = databaseOrder.get();
+        Order order = optionalDatabaseOrder.get();
         order.setStatus("Paid");
+        order.setPaidAt(transactionDate);
         orderRepository.save(order);
     }
     public void updateInventory(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         List<CartItems> cartItems = (List<CartItems>) session.getAttribute("cart");
         for (int i = 0; i < cartItems.size(); i++) {
-            Optional<Product> databaseProduct = productRepository.findProductById(cartItems.get(i).getProductId());
-            Product product = databaseProduct.get();
+            Optional<Product> optionalDatabaseProduct = productRepository.findProductById(cartItems.get(i).getProductId());
+            Product product = optionalDatabaseProduct.get();
             int newStockQuantity = (product.getStockQuantity() - cartItems.get(i).getQuantity());
             product.setStockQuantity(newStockQuantity);
             productRepository.save(product);

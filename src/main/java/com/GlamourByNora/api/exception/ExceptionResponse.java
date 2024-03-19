@@ -12,35 +12,27 @@ public class ExceptionResponse<G>{
     public String getMessage() {
         return message;
     }
-
     public void setMessage(String message) {
         this.message = message;
     }
-
     public Integer getStatus() {
         return status;
     }
-
     public void setStatus(Integer status) {
         this.status = status;
     }
-
     public Instant getTimestamp() {
         return timestamp;
     }
-
     public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
-
     public List<G> getData() {
         return data;
     }
-
     public void setData(List<G> data) {
         this.data = data;
     }
-
     @Override
     public String toString() {
         return "ExceptionResponse{" +

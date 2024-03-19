@@ -4,70 +4,58 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserResponseDto {
-    private String firstname;
-    private String lastname;
+    private String firstName;
+    private String lastName;
     private String country;
     private String state;
     private String email;
-    private Long phone_no;
+    private Long phoneNumber;
 
-    public String getFirstname() {
-        return firstname;
+    public String getFirstName() {
+        return firstName;
     }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
-
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
-
     public String getCountry() {
         return country;
     }
-
     public void setCountry(String country) {
         this.country = country;
     }
-
     public String getState() {
         return state;
     }
-
     public void setState(String state) {
         this.state = state;
     }
-
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
-
-    public Long getPhone_no() {
-        return phone_no;
+    public Long getPhoneNumber() {
+        return phoneNumber;
     }
-
-    public void setPhone_no(Long phone_no) {
-        this.phone_no = phone_no;
+    public void setPhoneNumber(Long phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
-
     @Override
     public String toString() {
         return "UserResponseDto{" +
-                "firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", country='" + country + '\'' +
                 ", state='" + state + '\'' +
                 ", email='" + email + '\'' +
-                ", phone_no=" + phone_no +
+                ", phoneNumber=" + phoneNumber +
                 '}';
     }
 }

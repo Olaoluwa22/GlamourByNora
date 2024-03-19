@@ -14,7 +14,7 @@ public class Order {
     @NotNull
     private String reference;
     @NotNull
-    private int quantityOfProduct;
+    private int quantityOfProductsOrdered;
     @NotNull
     private int value;
     @ManyToOne
@@ -23,6 +23,7 @@ public class Order {
     @NotNull
     private String status;
     private Instant createdAt;
+    private String paidAt;
 
     public Long getId() {
         return id;
@@ -36,11 +37,11 @@ public class Order {
     public void setReference(String reference) {
         this.reference = reference;
     }
-    public int getQuantityOfProduct() {
-        return quantityOfProduct;
+    public int getQuantityOfProductsOrdered() {
+        return quantityOfProductsOrdered;
     }
-    public void setQuantityOfProduct(int quantityOfProduct) {
-        this.quantityOfProduct = quantityOfProduct;
+    public void setQuantityOfProductsOrdered(int quantityOfProductsOrdered) {
+        this.quantityOfProductsOrdered = quantityOfProductsOrdered;
     }
     public int getValue() {
         return value;
@@ -66,16 +67,23 @@ public class Order {
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
+    public String getPaidAt() {
+        return paidAt;
+    }
+    public void setPaidAt(String paidAt) {
+        this.paidAt = paidAt;
+    }
 
     @Override
     public String toString() {
         return "Order{" +
                 "id=" + id +
                 ", reference='" + reference + '\'' +
-                ", quantityOfProduct=" + quantityOfProduct +
+                ", quantityOfProductsOrdered=" + quantityOfProductsOrdered +
                 ", value=" + value +
                 ", status='" + status + '\'' +
                 ", createdAt=" + createdAt +
+                ", paidAt='" + paidAt + '\'' +
                 '}';
     }
 }

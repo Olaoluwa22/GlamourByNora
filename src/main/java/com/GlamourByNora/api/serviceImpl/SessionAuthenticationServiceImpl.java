@@ -8,7 +8,6 @@ import com.GlamourByNora.api.service.SessionAuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +26,7 @@ public class SessionAuthenticationServiceImpl implements SessionAuthenticationSe
     public void login(User user, HttpServletRequest request) {
         HttpSession session = request.getSession();
         session.setAttribute("session", user.getEmail());
-        session.setAttribute("firstname", user.getFirstname());
+        session.setAttribute("firstname", user.getFirstName());
     }
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) {
@@ -48,7 +47,7 @@ public class SessionAuthenticationServiceImpl implements SessionAuthenticationSe
             throw new UserNotLoggedInException("User not Logged In");
         }
         String login = String.valueOf(loginSession);
-        Optional<User> sessionOwner = userRepository.findByEmailAndDeleted(login, false);
+        Optional<User> sessionOwner = userRepository.findUserByEmailAndDeleted(login, false);
         if (sessionOwner.isEmpty()){
             throw new UserNotFoundException("Unauthorized");
         }
