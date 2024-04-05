@@ -34,6 +34,15 @@ public class DefaultExceptionHandler {
         exceptionResponse.setData(null);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
     }
+    @ExceptionHandler(EmailAlreadyExistException.class)
+    public ResponseEntity<?> emailAlreadyExistException(EmailAlreadyExistException exception){
+        ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();
+        exceptionResponse.setTimestamp(Instant.now());
+        exceptionResponse.setMessage("Email Already Exist");
+        exceptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        exceptionResponse.setData(null);
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException exception){
         ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();

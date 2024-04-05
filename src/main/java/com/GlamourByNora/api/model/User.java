@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -31,6 +32,7 @@ public class User {
     @Size(min = 8)
     @Pattern(regexp="[a-zA-Z0-9]{8,}")
     private String password;
+    private String role;
     private boolean deleted;
     @OneToOne(mappedBy = "user")
     @JoinColumn(name = "user_id")
@@ -97,6 +99,15 @@ public class User {
     }
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+    public String getRole() {
+        return role;
+    }
+    public void setRole(String role) {
+        this.role = role;
+    }
+    public List<String> getRoleAsList(){
+        return Arrays.asList(this.role);
     }
     public Cart getShoppingCart() {
         return shoppingCart;

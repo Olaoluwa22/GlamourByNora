@@ -1,13 +1,15 @@
 package com.GlamourByNora.api.serviceImpl;
 
-import com.GlamourByNora.api.util.ConstantMessages;
-import com.GlamourByNora.api.util.ConstantMethod;
 import com.GlamourByNora.api.dto.AuthenticationDto;
+import com.GlamourByNora.api.dto.SignupRequestDto;
+import com.GlamourByNora.api.exception.exceptionHandler.EmailAlreadyExistException;
 import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
 import com.GlamourByNora.api.service.AppSecurityService;
 import com.GlamourByNora.api.service.AuthenticationService;
+import com.GlamourByNora.api.util.ConstantMessages;
+import com.GlamourByNora.api.util.ConstantMethod;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,35 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.userRepository = userRepository;
         this.appSecurityService = appSecurityService;
         this.constantMethod = constantMethod;
+    }
+    @Override
+    public ResponseEntity<?> signup(SignupRequestDto signupDto) {
+        ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
+        apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
+        User user = new User();
+        user.setFirstName(signupDto.getFirstName());
+        user.setLastName(signupDto.getLastName());
+        user.setCountry(signupDto.getCountry());
+        user.setState(signupDto.getState());
+        user.setAddress(signupDto.getAddress());
+        user.setEmail(signupDto.getEmail());
+        user.setPassword(signupDto.getPassword());
+        user.setPhoneNumber(signupDto.getPhoneNumber());
+        user.setDeleted(false);
+        user.setRole("user");
+        try {
+            Optional<User> userInDatabase = userRepository.findUserByEmail(user.getEmail());
+            if (userInDatabase.isPresent()) {
+                apiResponseMessages.setMessage(ConstantMessages.EXIST.getMessage());
+                return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
+            }
+            userRepository.save(user);
+            apiResponseMessages.setMessage(ConstantMessages.CREATED.getMessage());
+            return new ResponseEntity<>(apiResponseMessages, HttpStatus.CREATED);
+        }catch (EmailAlreadyExistException ex){
+            ex.printStackTrace();
+        }
+        return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @Override
     public ResponseEntity<?> login(AuthenticationDto authenticationDto, HttpServletResponse response, HttpServletRequest request) {
