@@ -11,11 +11,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -23,7 +21,6 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .sessionManagement(authorize -> authorize.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
         httpSecurity
                 .authorizeHttpRequests(authorize->authorize
                         .requestMatchers("/auth/signup").permitAll()
@@ -31,7 +28,6 @@ public class WebSecurityConfig {
                         .requestMatchers("/logout").authenticated()
                         .anyRequest().authenticated()
                 );
-
         return httpSecurity.build();
     }
     @Bean
