@@ -5,44 +5,43 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import jakarta.annotation.PostConstruct;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
-import java.util.Base64;
+import java.security.Key;
 import java.util.Date;
 import java.util.List;
-
+@Component
 public class JwtService {
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
-    private static String secretKey = "456464DVSVGG23653RJHFKG3RGVFEW653467GIRAFFE34TIFF4463737823TFGFMG";
+    private static final String SECRETKEY = "456464DVSVGG23653RJHFKG3RGVFEW653467GIRAFFE34TIFF4463737823TFGFMG";
 
-    @PostConstruct
-    protected void init(){
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
-    }
     public String createToken(String email, List<String> roles){
         Claims claims = Jwts.claims();
         claims.setSubject(email);
         claims.put("roles", roles);
         Date issuedDate = new Date();
         Date expiresAt = new Date(issuedDate.getTime() + 3600000);
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(issuedDate)
                 .setExpiration(expiresAt)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
+        return token;
     }
     public String getUsername(String token){
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parser().setSigningKey(SECRETKEY).parseClaimsJws(token).getBody().getSubject();
     }
     public boolean isTokenExpired(String token){
-        Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+        Jws<Claims> claims = Jwts.parser().setSigningKey(SECRETKEY).parseClaimsJws(token);
         return !claims.getBody().getExpiration().before(new Date());
     }
     public boolean isTokenValid(String token, UserDetails userDetails){
@@ -59,5 +58,9 @@ public class JwtService {
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = this.userDetailsServiceImpl.loadUserByUsername(getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+    private Key getSignKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(SECRETKEY);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

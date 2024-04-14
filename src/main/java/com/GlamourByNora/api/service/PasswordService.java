@@ -10,8 +10,8 @@ import org.springframework.http.ResponseEntity;
 
 public interface PasswordService {
     public ResponseEntity<?> updatePassword(PasswordDto passwordDto, HttpServletRequest request);
-    public ResponseEntity<?> forgetPassword(ForgetPasswordDto forgetPasswordDto, HttpServletResponse response);
-    public ResponseEntity<?> verifyCode(VerificationCodeDto verificationCodeDto, HttpServletRequest request);
+    public ResponseEntity<?> forgetPasswordAndSendOtp(ForgetPasswordDto forgetPasswordDto, HttpServletResponse response);
+    public ResponseEntity<?> verifyOtp(VerificationCodeDto verificationCodeDto, HttpServletRequest request);
     public ResponseEntity<?> resendCode(HttpServletRequest request);
     public ResponseEntity<?> setNewPassword(NewPasswordDto newPasswordDto, HttpServletRequest request);
 

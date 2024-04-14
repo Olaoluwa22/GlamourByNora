@@ -26,11 +26,11 @@ public class PasswordController {
     }
     @PostMapping("/forget-password")
     public ResponseEntity<?> forgetPassword(@Valid @RequestBody ForgetPasswordDto forgetPasswordDto, HttpServletResponse response){
-        return passwordService.forgetPassword(forgetPasswordDto, response);
+        return passwordService.forgetPasswordAndSendOtp(forgetPasswordDto, response);
     }
     @PostMapping("/verify-code")
     public ResponseEntity<?> verifyCode(@Valid @RequestBody VerificationCodeDto verificationCodeDto, HttpServletRequest request){
-        return passwordService.verifyCode(verificationCodeDto, request);
+        return passwordService.verifyOtp(verificationCodeDto, request);
     }
     @PostMapping("/resend-code")
     public ResponseEntity<?> resendCode(HttpServletRequest request){

@@ -1,14 +1,12 @@
 package com.GlamourByNora.api.serviceImpl;
 
-import com.GlamourByNora.api.util.ConstantMessages;
 import com.GlamourByNora.api.dto.ProductDto;
 import com.GlamourByNora.api.dto.ProductResponseDto;
 import com.GlamourByNora.api.model.Product;
 import com.GlamourByNora.api.repository.ProductRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
-import com.GlamourByNora.api.service.AppSecurityService;
 import com.GlamourByNora.api.service.ProductService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.GlamourByNora.api.util.ConstantMessages;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,17 +21,13 @@ import java.util.Optional;
 @Service
 public class ProductServiceImpl implements ProductService{
     private ProductRepository productRepository;
-    private AppSecurityService appSecurityService;
-
-    public ProductServiceImpl(ProductRepository productRepository, AppSecurityService appSecurityService){
+    public ProductServiceImpl(ProductRepository productRepository){
         this.productRepository = productRepository;
-        this.appSecurityService = appSecurityService;
     }
     @Override
-    public ResponseEntity<?> createNewProduct(ProductDto productDto, HttpServletRequest request) {
+    public ResponseEntity<?> createNewProduct(ProductDto productDto) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
-        appSecurityService.getLoggedInUser(request);
         Product product = new Product();
         product.setName(productDto.getName());
         product.setBrand(productDto.getBrand());
@@ -55,7 +49,7 @@ public class ProductServiceImpl implements ProductService{
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.CREATED);
     }
     @Override
-    public List<Product> getProductList() {
+    public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
     @Override
@@ -63,12 +57,12 @@ public class ProductServiceImpl implements ProductService{
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         try {
-            Optional<Product> byId = productRepository.findById(productId);
-            if (byId.isEmpty()) {
+            Optional<Product> optionalProduct = productRepository.findById(productId);
+            if (optionalProduct.isEmpty()) {
                 apiResponseMessages.setMessage(ConstantMessages.NOT_FOUND.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
-            Product product = byId.get();
+            Product product = optionalProduct.get();
             apiResponseMessages.setMessage(ConstantMessages.SUCCESS.getMessage());
             return new ResponseEntity<>(product,HttpStatus.OK);
         }catch(Exception ex){
@@ -112,17 +106,16 @@ public class ProductServiceImpl implements ProductService{
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
     }
     @Override
-    public ResponseEntity<?> updateProductById(Long productId, ProductDto productDto, HttpServletRequest request) {
-        appSecurityService.getLoggedInUser(request);
+    public ResponseEntity<?> updateProductById(Long productId, ProductDto productDto) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
-        Optional<Product> byId = productRepository.findById(productId);
+        Optional<Product> optionalProduct = productRepository.findById(productId);
         try {
-            if (byId.isEmpty()) {
+            if (optionalProduct.isEmpty()) {
                 apiResponseMessages.setMessage(ConstantMessages.NOT_FOUND.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
-            Product product = byId.get();
+            Product product = optionalProduct.get();
             product.setName(productDto.getName());
             product.setBrand(productDto.getBrand());
             product.setFragranceFamily(productDto.getFragranceFamily());
@@ -145,8 +138,7 @@ public class ProductServiceImpl implements ProductService{
             return new ResponseEntity<>(apiResponseMessages,HttpStatus.OK);
     }
     @Override
-    public ResponseEntity<?> deleteProductById(Long productId, HttpServletRequest request) {
-        appSecurityService.getLoggedInUser(request);
+    public ResponseEntity<?> deleteProductById(Long productId) {
         productRepository.deleteById(productId);
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.DELETED.getMessage());

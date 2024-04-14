@@ -14,7 +14,6 @@ import com.GlamourByNora.api.repository.OrderRepository;
 import com.GlamourByNora.api.repository.ProductRepository;
 import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
-import com.GlamourByNora.api.service.AppSecurityService;
 import com.GlamourByNora.api.service.EmailVerificationService;
 import com.GlamourByNora.api.service.ShoppingCartService;
 import com.GlamourByNora.api.util.*;
@@ -49,8 +48,6 @@ import java.util.Optional;
 @RestControllerAdvice
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private static final int STATUS_CODE_OK = 200;
-    @Autowired
-    private AppSecurityService appSecurityService;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -121,7 +118,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
     @Override
     public ResponseEntity<?> checkout(HttpServletRequest request) {
-        appSecurityService.getLoggedInUser(request);
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.TOTAL_VALUE.getMessage());
         apiResponseMessages.setData(String.valueOf(validateQuantityAndGetTotalValue(request)));
@@ -130,7 +126,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     @Transactional(rollbackOn = {NullPointerException.class, NotAuthorizedException.class})
     public ResponseEntity<?> proceedToPayment(HttpServletRequest request, PaystackTransactionRequest paystackTransactionRequest) throws NotAuthorizedException {
-        appSecurityService.getLoggedInUser(request);
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         Cookie[] cookie = request.getCookies();

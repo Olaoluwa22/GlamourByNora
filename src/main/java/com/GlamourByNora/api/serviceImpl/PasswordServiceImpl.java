@@ -1,6 +1,5 @@
 package com.GlamourByNora.api.serviceImpl;
 
-import com.GlamourByNora.api.util.ConstantMessages;
 import com.GlamourByNora.api.controller.ForgetPasswordDto;
 import com.GlamourByNora.api.dto.NewPasswordDto;
 import com.GlamourByNora.api.dto.PasswordDto;
@@ -10,15 +9,15 @@ import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.OTPRepository;
 import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
-import com.GlamourByNora.api.service.AppSecurityService;
 import com.GlamourByNora.api.service.EmailVerificationService;
 import com.GlamourByNora.api.service.PasswordService;
+import com.GlamourByNora.api.service.UserService;
+import com.GlamourByNora.api.util.ConstantMessages;
 import com.GlamourByNora.api.util.GetCookieValue;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,38 +29,26 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service
 public class PasswordServiceImpl implements PasswordService {
     @Autowired
-    private AppSecurityService appSecurityService;
-    @Autowired
     private UserRepository userRepository;
     @Autowired
     private OTPRepository otpRepository;
     @Autowired
     private EmailVerificationService emailVerificationService;
-    @Value("${app.cookie.login}")
-    private String loginCookieName;
+    @Autowired
+    private UserService userService;
     @Override
     public ResponseEntity<?> updatePassword(PasswordDto passwordDto, HttpServletRequest request) {
-        appSecurityService.getLoggedInUser(request);
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
-        Cookie[] cookies = request.getCookies();
-        Cookie loggedInUser = null;
         try {
-            for (int i = 0; i < cookies.length; i++) {
-                Cookie cookies1 = cookies[i];
-                if (cookies1.getName().equalsIgnoreCase(loginCookieName)) {
-                    loggedInUser = cookies1;
-                    break;
-                }
-            }
-            Optional<User> databaseUser = userRepository.findUserByEmail(loggedInUser.getValue());
-            if (databaseUser.isEmpty()){
+            Optional<User> optionalUser = userRepository.findUserByEmail(userService.getUsernameOfLoggedInUser());
+            if (optionalUser.isEmpty()){
                 apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            User user = databaseUser.get();
+            User user = optionalUser.get();
             if (!user.getPassword().equals(passwordDto.getOldPassword())){
-                apiResponseMessages.setMessage(ConstantMessages.INCORRECT_PASSWORD.getMessage());
+                apiResponseMessages.setMessage(ConstantMessages.INCORRECT_OLD_PASSWORD.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
             if (!passwordDto.getNewPassword().equals(passwordDto.getConfirmNewPassword())){
@@ -78,7 +65,7 @@ public class PasswordServiceImpl implements PasswordService {
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @Override
-    public ResponseEntity<?> forgetPassword(ForgetPasswordDto forgetPasswordDto, HttpServletResponse response) {
+    public ResponseEntity<?> forgetPasswordAndSendOtp(ForgetPasswordDto forgetPasswordDto, HttpServletResponse response) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         try {
@@ -107,7 +94,7 @@ public class PasswordServiceImpl implements PasswordService {
         apiResponseMessages.setMessage(ConstantMessages.PROCEED.getMessage());
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
     }
-    public ResponseEntity<?> verifyCode(VerificationCodeDto verificationCodeDto, HttpServletRequest request){
+    public ResponseEntity<?> verifyOtp(VerificationCodeDto verificationCodeDto, HttpServletRequest request){
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         try {
             Optional<OTP> databaseOTP = otpRepository.findByOtp(verificationCodeDto.getCode());

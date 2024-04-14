@@ -3,7 +3,6 @@ package com.GlamourByNora.api.controller;
 import com.GlamourByNora.api.dto.ProductDto;
 import com.GlamourByNora.api.model.Product;
 import com.GlamourByNora.api.service.ProductService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,33 +10,34 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/product")
 public class ProductController {
     private ProductService productService;
     public ProductController(ProductService productService){
         this.productService = productService;
     }
-    @PostMapping("/product-create")
-    public ResponseEntity<?> createNewProduct(@Valid @RequestBody ProductDto productDto, HttpServletRequest request){
-       return productService.createNewProduct(productDto, request);
+    @PostMapping("/create-a-product")
+    public ResponseEntity<?> createNewProduct(@Valid @RequestBody ProductDto productDto){
+       return productService.createNewProduct(productDto);
     }
-    @GetMapping("/product/list")
-    public List<Product> getProductList(){
-        return productService.getProductList();
+    @GetMapping("/list-of-products")
+    public List<Product> getAllProducts(){
+        return productService.getAllProducts();
     }
-    @GetMapping("/product/{productId}")
+    @GetMapping("/{productId}")
     public ResponseEntity<?> getProductById(@PathVariable(name = "productId") Long productId){
         return productService.getProductById(productId);
     }
-    @GetMapping("/product/page-list")
+    @GetMapping("/page-list")
     public ResponseEntity<?> getProductByPageable(@RequestParam int page, @RequestParam int size){
         return productService.getProductByPageable(page, size);
     }
-    @PutMapping("/product/update/{id}")
-    public ResponseEntity<?> updateProductById(@Valid @PathVariable(name = "id") Long id, @RequestBody ProductDto productDto, HttpServletRequest request){
-        return productService.updateProductById(id, productDto, request);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateProductById(@Valid @PathVariable(name = "id") Long id, @RequestBody ProductDto productDto){
+        return productService.updateProductById(id, productDto);
     }
-    @DeleteMapping("/product/delete/{id}")
-    public ResponseEntity<?> deleteProductById(@PathVariable( name = "id") Long productId, HttpServletRequest request){
-        return productService.deleteProductById(productId, request);
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteProductById(@PathVariable( name = "id") Long productId){
+        return productService.deleteProductById(productId);
     }
 }

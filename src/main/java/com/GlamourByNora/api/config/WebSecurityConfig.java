@@ -20,12 +20,21 @@ public class WebSecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
-                .sessionManagement(authorize -> authorize.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(configure -> configure.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         httpSecurity
                 .authorizeHttpRequests(authorize->authorize
-                        .requestMatchers("/auth/signup").permitAll()
-                        .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/logout").authenticated()
+                        .requestMatchers("/auth/signup", "/auth/login").permitAll()
+                        .requestMatchers("/auth/logout").authenticated()
+                        .requestMatchers("/account/update-password").authenticated()
+                        .requestMatchers("/account/**").permitAll()
+                        .requestMatchers("/user/getAllUsers", "/user/page-list", "/user/{id}", "/user/delete/{id}").authenticated()
+                        .requestMatchers("/user/getAllUsers", "/user/page-list", "/user/{id}", "/user/delete/{id}").hasRole("ADMIN")
+                        .requestMatchers("/user/updateInfo/{id}").authenticated()
+                        .requestMatchers("/product/create-a-product", "/product/update/{id}", "/product/delete/{id}").authenticated()
+                        .requestMatchers("/product/create-a-product", "/product/update/{id}", "/product/delete/{id}").hasRole("ADMIN")
+                        .requestMatchers("/product/list-of-products", "/product/{productId}", "/product/page-list").permitAll()
+                        .requestMatchers("/cart/add-to-cart", "/cart/delete-from-cart").permitAll()
+                        .requestMatchers("/cart/checkout").authenticated()
                         .anyRequest().authenticated()
                 );
         return httpSecurity.build();
