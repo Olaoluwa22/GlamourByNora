@@ -1,4 +1,4 @@
-package com.GlamourByNora.api.paymentModel;
+package com.GlamourByNora.api.dto;
 
 import com.GlamourByNora.api.util.PaystackVerificationData;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -6,12 +6,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PaystackVerificationResponse {
+public class PaystackVerificationResponseDto {
     private String status;
     private String message;
     private PaystackVerificationData paystackVerificationData;
 
-    public PaystackVerificationResponse(){}
+    public PaystackVerificationResponseDto(){}
     public String getStatus() {
         return status;
     }
@@ -33,7 +33,7 @@ public class PaystackVerificationResponse {
 
     @Override
     public String toString() {
-        return "PaystackVerificationResponse{" +
+        return "PaystackVerificationResponseDto{" +
                 "status='" + status + '\'' +
                 ", message='" + message + '\'' +
                 ", paystackVerificationData=" + paystackVerificationData +

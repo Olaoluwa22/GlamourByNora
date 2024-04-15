@@ -1,4 +1,4 @@
-package com.GlamourByNora.api.controller;
+package com.GlamourByNora.api.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;

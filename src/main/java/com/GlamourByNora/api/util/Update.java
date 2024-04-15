@@ -3,7 +3,6 @@ package com.GlamourByNora.api.util;
 import com.GlamourByNora.api.exception.exceptionHandler.OrderNotFoundException;
 import com.GlamourByNora.api.model.Order;
 import com.GlamourByNora.api.model.Product;
-import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.OrderRepository;
 import com.GlamourByNora.api.repository.ProductRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,12 +22,7 @@ public class Update {
         this.productRepository = productRepository;
     }
 
-    public void updateOrder(User user, String transactionDate) throws OrderNotFoundException {
-        Optional<Order> optionalDatabaseOrder = orderRepository.findOrderByUserId(user.getId());
-        if (optionalDatabaseOrder.isEmpty() || optionalDatabaseOrder.get().getStatus().equalsIgnoreCase("Paid") || optionalDatabaseOrder.get().getStatus().equalsIgnoreCase("Delivered")){
-            throw new OrderNotFoundException("Invalid Order Number");
-        }
-        Order order = optionalDatabaseOrder.get();
+    public void updateOrder(Order order, String transactionDate) throws OrderNotFoundException {
         order.setStatus("Paid");
         order.setPaidAt(transactionDate);
         orderRepository.save(order);
@@ -42,6 +36,7 @@ public class Update {
             int newStockQuantity = (product.getStockQuantity() - cartItems.get(i).getQuantity());
             product.setStockQuantity(newStockQuantity);
             productRepository.save(product);
+            session.invalidate();
         }
     }
 }

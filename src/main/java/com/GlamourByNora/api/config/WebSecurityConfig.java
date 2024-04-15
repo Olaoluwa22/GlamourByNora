@@ -33,8 +33,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/product/create-a-product", "/product/update/{id}", "/product/delete/{id}").authenticated()
                         .requestMatchers("/product/create-a-product", "/product/update/{id}", "/product/delete/{id}").hasRole("ADMIN")
                         .requestMatchers("/product/list-of-products", "/product/{productId}", "/product/page-list").permitAll()
-                        .requestMatchers("/cart/add-to-cart", "/cart/delete-from-cart").permitAll()
-                        .requestMatchers("/cart/checkout").authenticated()
+                        .requestMatchers("/cart/*").permitAll()
+                        .requestMatchers("/payment/checkout").permitAll()
+                        .requestMatchers("/payment/**").authenticated()
                         .anyRequest().authenticated()
                 );
         return httpSecurity.build();

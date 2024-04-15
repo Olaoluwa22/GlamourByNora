@@ -1,4 +1,4 @@
-package com.GlamourByNora.api.paymentModel;
+package com.GlamourByNora.api.dto;
 
 import com.GlamourByNora.api.util.Data;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PaystackTransactionResponse {
+public class PaystackTransactionResponseDto {
     private boolean status;
     private String message;
     private Data data;

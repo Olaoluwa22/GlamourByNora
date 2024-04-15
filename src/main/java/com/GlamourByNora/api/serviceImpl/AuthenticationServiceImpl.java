@@ -29,18 +29,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.jwtService = jwtService;
     }
     @Override
-    public ResponseEntity<?> signup(SignupRequestDto signupDto) {
+    public ResponseEntity<?> signup(SignupRequestDto signupRequestDto) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         User user = new User();
-        user.setFirstName(signupDto.getFirstName());
-        user.setLastName(signupDto.getLastName());
-        user.setCountry(signupDto.getCountry());
-        user.setState(signupDto.getState());
-        user.setAddress(signupDto.getAddress());
-        user.setEmail(signupDto.getEmail());
-        user.setPassword(signupDto.getPassword());
-        user.setPhoneNumber(signupDto.getPhoneNumber());
+        user.setFirstName(signupRequestDto.getFirstName());
+        user.setLastName(signupRequestDto.getLastName());
+        user.setCountry(signupRequestDto.getCountry());
+        user.setState(signupRequestDto.getState());
+        user.setAddress(signupRequestDto.getAddress());
+        user.setEmail(signupRequestDto.getEmail());
+        user.setPassword(signupRequestDto.getPassword());
+        user.setPhoneNumber(signupRequestDto.getPhoneNumber());
         user.setDeleted(false);
         user.setRole("ADMIN");
         try {

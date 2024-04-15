@@ -1,6 +1,6 @@
 package com.GlamourByNora.api.serviceImpl;
 
-import com.GlamourByNora.api.controller.ForgetPasswordDto;
+import com.GlamourByNora.api.dto.ForgetPasswordDto;
 import com.GlamourByNora.api.dto.NewPasswordDto;
 import com.GlamourByNora.api.dto.PasswordDto;
 import com.GlamourByNora.api.dto.VerificationCodeDto;

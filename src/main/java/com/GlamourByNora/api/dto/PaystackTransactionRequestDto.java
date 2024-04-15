@@ -1,4 +1,4 @@
-package com.GlamourByNora.api.paymentModel;
+package com.GlamourByNora.api.dto;
 
 import com.GlamourByNora.api.util.PaystackBearer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PaystackTransactionRequest {
+public class PaystackTransactionRequestDto {
     private int amount;
     private String email;
     private String reference;
@@ -73,7 +73,7 @@ public class PaystackTransactionRequest {
 
     @Override
     public String toString() {
-        return "PaystackTransactionRequest{" +
+        return "PaystackTransactionRequestDto{" +
                 "amount='" + amount + '\'' +
                 ", email='" + email + '\'' +
                 ", reference='" + reference + '\'' +
