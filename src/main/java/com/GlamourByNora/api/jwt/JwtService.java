@@ -44,10 +44,6 @@ public class JwtService {
         Jws<Claims> claims = Jwts.parser().setSigningKey(SECRETKEY).parseClaimsJws(token);
         return !claims.getBody().getExpiration().before(new Date());
     }
-    public boolean isTokenValid(String token, UserDetails userDetails){
-        String username = getUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
     public String resolveToken(HttpServletRequest request) {
        String bearerToken = request.getHeader("Authorization");
        if(bearerToken != null && bearerToken.startsWith("Bearer")){
@@ -63,4 +59,26 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(SECRETKEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+    public void expireThisToken(String token){
+        Jws<Claims> parsedClaimsJws = Jwts.parser().setSigningKey(SECRETKEY).parseClaimsJws(token);
+        Claims claim = parsedClaimsJws.getBody();
+        claim.setExpiration(new Date());
+        Jwts.builder()
+                .setClaims(claim)
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -8,26 +8,31 @@ import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
 import com.GlamourByNora.api.service.AuthenticationService;
+import com.GlamourByNora.api.service.UserService;
 import com.GlamourByNora.api.util.ConstantMessages;
-import com.GlamourByNora.api.util.ConstantMethod;
+import com.GlamourByNora.api.util.InfoGetter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
+    @Autowired
     private UserRepository userRepository;
-    private ConstantMethod constantMethod;
+    @Autowired
+    private InfoGetter infoGetter;
+    @Autowired
     private JwtService jwtService;
-    public AuthenticationServiceImpl(UserRepository userRepository, ConstantMethod constantMethod, JwtService jwtService) {
-        this.userRepository = userRepository;
-        this.constantMethod = constantMethod;
-        this.jwtService = jwtService;
-    }
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Override
     public ResponseEntity<?> signup(SignupRequestDto signupRequestDto) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
@@ -39,10 +44,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setState(signupRequestDto.getState());
         user.setAddress(signupRequestDto.getAddress());
         user.setEmail(signupRequestDto.getEmail());
-        user.setPassword(signupRequestDto.getPassword());
+        user.setPassword(passwordEncoder.encode(signupRequestDto.getPassword()));
         user.setPhoneNumber(signupRequestDto.getPhoneNumber());
         user.setDeleted(false);
-        user.setRole("ADMIN");
+        user.setRole("USER");
         try {
             Optional<User> userInDatabase = userRepository.findUserByEmail(user.getEmail());
             if (userInDatabase.isPresent()) {
@@ -64,12 +69,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         try {
-            Optional<User> optionalUser = userRepository.findUserByEmailAndDeleted(authenticationDto.getUsername(), false);
-            if (optionalUser.isEmpty()) {
-                apiResponseMessages.setMessage(ConstantMessages.INCORRECT.getMessage());
-                return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
-            }
-            User user = optionalUser.get();
+            User user = infoGetter.getUserByEmailAndDeleted(authenticationDto.getUsername(), false);
             if (!authenticationDto.getPassword().equals(user.getPassword())) {
                 apiResponseMessages.setMessage(ConstantMessages.INCORRECT.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
@@ -85,9 +85,43 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @Override
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> logout(HttpServletRequest request) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
-        apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
-        return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
+        String token = jwtService.resolveToken(request);
+        jwtService.expireThisToken(token);
+        apiResponseMessages.setMessage(ConstantMessages.LOGGED_OUT.getMessage());
+        return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
         }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

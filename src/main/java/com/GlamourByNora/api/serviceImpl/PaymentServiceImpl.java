@@ -4,7 +4,6 @@ import com.GlamourByNora.api.dto.PaystackTransactionRequestDto;
 import com.GlamourByNora.api.dto.PaystackVerificationResponseDto;
 import com.GlamourByNora.api.exception.exceptionHandler.NotAuthorizedException;
 import com.GlamourByNora.api.exception.exceptionHandler.OrderNotFoundException;
-import com.GlamourByNora.api.exception.exceptionHandler.UserNotFoundException;
 import com.GlamourByNora.api.model.Order;
 import com.GlamourByNora.api.model.Product;
 import com.GlamourByNora.api.model.User;
@@ -14,10 +13,7 @@ import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
 import com.GlamourByNora.api.service.PaymentService;
 import com.GlamourByNora.api.service.UserService;
-import com.GlamourByNora.api.util.CartItems;
-import com.GlamourByNora.api.util.ConstantMessages;
-import com.GlamourByNora.api.util.OrderReference;
-import com.GlamourByNora.api.util.Update;
+import com.GlamourByNora.api.util.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -31,7 +27,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -42,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RestControllerAdvice
@@ -56,18 +50,15 @@ public class PaymentServiceImpl implements PaymentService {
     private UserRepository userRepository;
     @Autowired
     private UserService userService;
-    @Value("${app.cookie.login}")
-    private String loginCookieName;
+    @Autowired
+    private InfoGetter infoGetter;
+
     private int validateQuantityAndGetTotalValue(HttpServletRequest request){
         HttpSession session = request.getSession(false);
         List<CartItems> listOfCartItems = (List<CartItems>) session.getAttribute("cart");
         int totalValue = 0;
         for (int i = 0; i < listOfCartItems.size(); i++) {
-            Optional<Product> optionalProduct = productRepository.findProductById(listOfCartItems.get(i).getProductId());
-            if (optionalProduct.isEmpty()){
-                throw new NullPointerException();
-            }
-            Product product = optionalProduct.get();
+            Product product = infoGetter.getProduct(listOfCartItems.get(i).getProductId());
             if (product.getStockQuantity() == 0){
                 listOfCartItems.remove(listOfCartItems.get(i));
             } else if ((product.getStockQuantity() < listOfCartItems.get(i).getQuantity())) {
@@ -97,11 +88,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
     private String initializeTransaction(PaystackTransactionRequestDto paystackTransactionRequestDto, User user) throws IOException, NotAuthorizedException {
         String paymentUrl = null;
-        Optional<Order> optionalOrder = orderRepository.findOrderByUserId(user.getId());
-        if (optionalOrder.isEmpty() || optionalOrder.get().getStatus().equals("Paid") || optionalOrder.get().getStatus().equals("Delivered")){
-            throw new UserNotFoundException("Invalid Order reference");
-        }
-        Order order = optionalOrder.get();
+        Order order = infoGetter.getOrder(user.getId());
         paystackTransactionRequestDto.setAmount(order.getValue()*100);
         paystackTransactionRequestDto.setEmail(user.getEmail());
         paystackTransactionRequestDto.setReference(order.getReference());
@@ -149,11 +136,7 @@ public class PaymentServiceImpl implements PaymentService {
     public ResponseEntity<?> proceedToPayment(HttpServletRequest request, PaystackTransactionRequestDto paystackTransactionRequestDto) throws NotAuthorizedException {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
-        Optional<User> databaseUser = userRepository.findUserByEmail(userService.getUsernameOfLoggedInUser());
-        if (databaseUser.isEmpty()) {
-            return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        User user = databaseUser.get();
+        User user = infoGetter.getUser(userService.getUsernameOfLoggedInUser());
         String paymentUrl;
         try {
             createOrder(request, user);
@@ -169,16 +152,8 @@ public class PaymentServiceImpl implements PaymentService {
     public ResponseEntity<?> verifyPaystackTransaction(String reference, HttpServletRequest httpRequest) throws InterruptedException {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
-        Optional<User> optionalUser = userRepository.findUserByEmail(userService.getUsernameOfLoggedInUser());
-        if (optionalUser.isEmpty()) {
-            return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        User user = optionalUser.get();
-        Optional<Order> optionalOrder = orderRepository.findOrderByUserId(user.getId());
-        if (optionalOrder.isEmpty() || !optionalOrder.get().getStatus().equalsIgnoreCase("Processing")){
-            return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        Order order = optionalOrder.get();
+        User user = infoGetter.getUser(userService.getUsernameOfLoggedInUser());
+        Order order = infoGetter.getOrder(user.getId());
         PaystackVerificationResponseDto paystackVerificationResponseDto = null;
         try {
             CloseableHttpClient client = HttpClientBuilder.create().build();
@@ -216,3 +191,27 @@ public class PaymentServiceImpl implements PaymentService {
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

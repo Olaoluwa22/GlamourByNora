@@ -30,7 +30,8 @@ public enum ConstantMessages {
     PAID("Paid", 27),
     DELIVERED("Delivered", 28),
     CANCELLED("Cancelled", 29),
-    TRANSACTION_SUCCESSFUL("Transaction Successful",30 );
+    TRANSACTION_SUCCESSFUL("Transaction Successful",30 ),
+    INPUT_A_NEW_PASSWORD("Input a new password different from your old password", 31);
 
     private String message;
     private int status;

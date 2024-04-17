@@ -8,6 +8,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface AuthenticationService {
     ResponseEntity<?> login(AuthenticationDto authenticationDto, HttpServletResponse response, HttpServletRequest request);
-    ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response);
+    ResponseEntity<?> logout(HttpServletRequest request);
     ResponseEntity<?> signup(SignupRequestDto signupDto);
 }

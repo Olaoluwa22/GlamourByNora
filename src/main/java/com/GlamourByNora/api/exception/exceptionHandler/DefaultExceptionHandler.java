@@ -29,7 +29,7 @@ public class DefaultExceptionHandler {
     public ResponseEntity<?> notAuthorizedException(NotAuthorizedException exception){
         ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();
         exceptionResponse.setTimestamp(Instant.now());
-        exceptionResponse.setMessage("Error Occurred while initializing transaction");
+        exceptionResponse.setMessage("User not authorized");
         exceptionResponse.setStatus(HttpStatus.FORBIDDEN.value());
         exceptionResponse.setData(null);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
@@ -74,6 +74,15 @@ public class DefaultExceptionHandler {
         ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();
         exceptionResponse.setTimestamp(Instant.now());
         exceptionResponse.setMessage("Order Not Found...");
+        exceptionResponse.setData(null);
+        exceptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<?> productNotFoundException(ProductNotFoundException productNotFound){
+        ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();
+        exceptionResponse.setTimestamp(Instant.now());
+        exceptionResponse.setMessage("Product Not Found...");
         exceptionResponse.setData(null);
         exceptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);

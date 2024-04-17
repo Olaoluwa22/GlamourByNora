@@ -14,16 +14,17 @@ import com.GlamourByNora.api.service.PasswordService;
 import com.GlamourByNora.api.service.UserService;
 import com.GlamourByNora.api.util.ConstantMessages;
 import com.GlamourByNora.api.util.GetCookieValue;
+import com.GlamourByNora.api.util.InfoGetter;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -36,19 +37,20 @@ public class PasswordServiceImpl implements PasswordService {
     private EmailVerificationService emailVerificationService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private InfoGetter infoGetter;
     @Override
     public ResponseEntity<?> updatePassword(PasswordDto passwordDto, HttpServletRequest request) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         try {
-            Optional<User> optionalUser = userRepository.findUserByEmail(userService.getUsernameOfLoggedInUser());
-            if (optionalUser.isEmpty()){
-                apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
-                return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            User user = optionalUser.get();
+            User user = infoGetter.getUser(userService.getUsernameOfLoggedInUser());
             if (!user.getPassword().equals(passwordDto.getOldPassword())){
                 apiResponseMessages.setMessage(ConstantMessages.INCORRECT_OLD_PASSWORD.getMessage());
+                return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
+            }
+            if (passwordDto.getOldPassword().equals(passwordDto.getNewPassword())){
+                apiResponseMessages.setMessage(ConstantMessages.INPUT_A_NEW_PASSWORD.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
             if (!passwordDto.getNewPassword().equals(passwordDto.getConfirmNewPassword())){
@@ -69,13 +71,8 @@ public class PasswordServiceImpl implements PasswordService {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         try {
-            Optional<User> databaseUser = userRepository.findUserByEmail(forgetPasswordDto.getEmail());
-            if (databaseUser.isEmpty()) {
-                apiResponseMessages.setMessage(ConstantMessages.INVALID_EMAIL.getMessage());
-                return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
-            }
-            User user = databaseUser.get();
-            Cookie cookie = new Cookie("userEmail", forgetPasswordDto.getEmail());
+            User user = infoGetter.getUser(forgetPasswordDto.getEmail());
+            Cookie cookie = new Cookie("userEmail", user.getEmail());
             cookie.setMaxAge(600);
             cookie.setHttpOnly(true);
             cookie.setPath("/");
@@ -83,12 +80,12 @@ public class PasswordServiceImpl implements PasswordService {
             OTP otp = new OTP();
             otp.setOtp(String.valueOf(ThreadLocalRandom.current().nextInt(100000, 999999)));
             otp.setCreatedAt(Instant.now());
-            otp.setExpiresAt(Instant.now().plusSeconds(80));
+            otp.setExpiresAt(Instant.now().plusSeconds(70));
             otp.setUserId(user.getId());
             otp.setExpired(false);
             emailVerificationService.sendOTP(user.getEmail(), otp.getOtp());
             otpRepository.save(otp);
-        }catch (NullPointerException exception){
+        }catch (BadCredentialsException exception){
             exception.getMessage();
         }
         apiResponseMessages.setMessage(ConstantMessages.PROCEED.getMessage());
@@ -97,23 +94,18 @@ public class PasswordServiceImpl implements PasswordService {
     public ResponseEntity<?> verifyOtp(VerificationCodeDto verificationCodeDto, HttpServletRequest request){
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         try {
-            Optional<OTP> databaseOTP = otpRepository.findByOtp(verificationCodeDto.getCode());
-            if (databaseOTP.isEmpty()){
-                apiResponseMessages.setMessage(ConstantMessages.OTP_INCORRECT.getMessage());
-                return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
-            }
-            OTP otp = databaseOTP.get();
+            OTP otp = infoGetter.getOtp(verificationCodeDto.getCode());
             if (Instant.now().isAfter(otp.getExpiresAt())){
                 otp.setExpired(true);
                 otpRepository.save(otp);
                 apiResponseMessages.setMessage(ConstantMessages.OTP_IS_EXPIRED.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.FORBIDDEN);
             }
-            apiResponseMessages.setMessage(ConstantMessages.PROCEED.getMessage());
             otp.setExpired(true);
             otpRepository.save(otp);
+            apiResponseMessages.setMessage(ConstantMessages.PROCEED.getMessage());
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
-        }catch (NullPointerException exception){
+        }catch (BadCredentialsException exception){
             exception.printStackTrace();
         }
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
@@ -125,12 +117,7 @@ public class PasswordServiceImpl implements PasswordService {
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         GetCookieValue cookieValue = new GetCookieValue();
         try {
-            Optional<User> databaseUser = userRepository.findUserByEmail(cookieValue.getCookieValue(request));
-            if (databaseUser.isEmpty()) {
-                apiResponseMessages.setMessage(ConstantMessages.INVALID_EMAIL.getMessage());
-                return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
-            }
-            User user = databaseUser.get();
+            User user = infoGetter.getUser(cookieValue.getCookieValue(request));
             OTP otp = new OTP();
             otp.setOtp(String.valueOf(ThreadLocalRandom.current().nextInt(100000, 999999)));
             otp.setCreatedAt(Instant.now());
@@ -152,17 +139,12 @@ public class PasswordServiceImpl implements PasswordService {
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         GetCookieValue cookieValue = new GetCookieValue();
         try {
-            Optional<User> databaseUser = userRepository.findUserByEmail(cookieValue.getCookieValue(request));
-            if (databaseUser.isEmpty()) {
-                apiResponseMessages.setMessage(ConstantMessages.INVALID_EMAIL.getMessage());
-                return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
-            }
-            User user = databaseUser.get();
-            if (!newPasswordDto.getPassword().equals(newPasswordDto.getConfirmPassword())){
+            User user = infoGetter.getUser(cookieValue.getCookieValue(request));
+            if (!newPasswordDto.getNewPassword().equals(newPasswordDto.getConfirmNewPassword())){
                 apiResponseMessages.setMessage(ConstantMessages.CHECK_INPUT.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
-            user.setPassword(newPasswordDto.getPassword());
+            user.setPassword(newPasswordDto.getNewPassword());
             userRepository.save(user);
             apiResponseMessages.setMessage(ConstantMessages.NEW_PASSWORD_SAVED.getMessage());
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
