@@ -3,7 +3,8 @@ package com.GlamourByNora.api.serviceImpl;
 import com.GlamourByNora.api.dto.AuthenticationDto;
 import com.GlamourByNora.api.dto.SignupRequestDto;
 import com.GlamourByNora.api.exception.exceptionHandler.EmailAlreadyExistException;
-import com.GlamourByNora.api.jwt.JwtService;
+import com.GlamourByNora.api.jwt.service.JwtBlacklistService;
+import com.GlamourByNora.api.jwt.service.JwtTokenService;
 import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
@@ -28,11 +29,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private InfoGetter infoGetter;
     @Autowired
-    private JwtService jwtService;
+    private JwtTokenService jwtTokenService;
     @Autowired
     private UserService userService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtBlacklistService blacklistService;
+
     @Override
     public ResponseEntity<?> signup(SignupRequestDto signupRequestDto) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
@@ -55,15 +59,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
             userRepository.save(user);
-            String token = jwtService.createToken(user.getEmail(), user.getRoleAsList());
+            String token = jwtTokenService.createToken(user.getEmail(), user.getRoleAsList());
             apiResponseMessages.setMessage(ConstantMessages.CREATED.getMessage());
             apiResponseMessages.setData(token);
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.CREATED);
-        }catch (EmailAlreadyExistException ex){
+        } catch (EmailAlreadyExistException ex) {
             ex.printStackTrace();
         }
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
     @Override
     public ResponseEntity<?> login(AuthenticationDto authenticationDto, HttpServletResponse response, HttpServletRequest request) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
@@ -74,7 +79,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 apiResponseMessages.setMessage(ConstantMessages.INCORRECT.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
-            String token = jwtService.createToken(user.getEmail(), user.getRoleAsList());
+            String token = jwtTokenService.createToken(user.getEmail(), user.getRoleAsList());
             apiResponseMessages.setData(token);
             apiResponseMessages.setMessage(ConstantMessages.USER_LOGGED_IN_SUCCESSFULLY.getMessage());
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
@@ -84,44 +89,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
     @Override
     public ResponseEntity<?> logout(HttpServletRequest request) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
-        String token = jwtService.resolveToken(request);
-        jwtService.expireThisToken(token);
+        blacklistService.invalidateToken(request);
         apiResponseMessages.setMessage(ConstantMessages.LOGGED_OUT.getMessage());
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
-        }
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
