@@ -3,7 +3,10 @@ package com.GlamourByNora.api.util;
 import com.GlamourByNora.api.exception.exceptionHandler.OrderNotFoundException;
 import com.GlamourByNora.api.exception.exceptionHandler.ProductNotFoundException;
 import com.GlamourByNora.api.exception.exceptionHandler.UserNotFoundException;
-import com.GlamourByNora.api.model.*;
+import com.GlamourByNora.api.model.OTP;
+import com.GlamourByNora.api.model.Order;
+import com.GlamourByNora.api.model.Product;
+import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.OTPRepository;
 import com.GlamourByNora.api.repository.OrderRepository;
 import com.GlamourByNora.api.repository.ProductRepository;
@@ -63,7 +66,6 @@ public class InfoGetter {
         }
         return optionalOTP.get();
     }
-
 }
 
 
