@@ -1,5 +1,7 @@
-package com.GlamourByNora.api.jwt;
+package com.GlamourByNora.api.jwt.filter;
 
+import com.GlamourByNora.api.jwt.service.JwtBlacklistService;
+import com.GlamourByNora.api.jwt.service.JwtTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,17 +15,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private JwtService jwtService;
-    public JwtAuthenticationFilter(JwtService jwtService) {
-        this.jwtService = jwtService;
+    private JwtTokenService jwtTokenService;
+    private JwtBlacklistService jwtBlacklistService;
+    public JwtAuthenticationFilter(JwtTokenService jwtTokenService, JwtBlacklistService jwtBlacklistService) {
+        this.jwtTokenService = jwtTokenService;
+        this.jwtBlacklistService = jwtBlacklistService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try{
-            String token = jwtService.resolveToken(request);
-            if(token != null && jwtService.isTokenExpired(token)){
-                Authentication jwtServiceAuthentication = jwtService.getAuthentication(token);
+            String token = jwtTokenService.resolveToken(request);
+            if(token != null && jwtTokenService.isTokenExpired(token) && jwtBlacklistService.isTokenNotBlacklisted(token)){
+                Authentication jwtServiceAuthentication = jwtTokenService.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(jwtServiceAuthentication);
             }
             filterChain.doFilter(request, response);
@@ -32,24 +36,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -67,25 +67,3 @@ public class InfoGetter {
         return optionalOTP.get();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

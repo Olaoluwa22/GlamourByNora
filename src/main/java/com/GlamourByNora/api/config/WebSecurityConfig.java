@@ -1,6 +1,6 @@
 package com.GlamourByNora.api.config;
 
-import com.GlamourByNora.api.jwt.JwtAuthenticationFilter;
+import com.GlamourByNora.api.jwt.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

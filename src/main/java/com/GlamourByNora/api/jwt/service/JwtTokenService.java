@@ -1,4 +1,4 @@
-package com.GlamourByNora.api.jwt;
+package com.GlamourByNora.api.jwt.service;
 
 import com.GlamourByNora.api.serviceImpl.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
@@ -18,7 +18,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.List;
 @Component
-public class JwtService {
+public class JwtTokenService {
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
     private static final String SECRETKEY = "456464DVSVGG23653RJHFKG3RGVFEW653467GIRAFFE34TIFF4463737823TFGFMG";
@@ -69,16 +69,3 @@ public class JwtService {
                 .compact();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
