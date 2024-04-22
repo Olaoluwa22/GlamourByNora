@@ -10,7 +10,10 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findUserByEmail(String email);
-    List<User> findUserByDeleted(boolean deleted);
+    List<User> findUserByDeleted(boolean isDeleted);
     Page<User> findUserByDeletedFalse(Pageable pageable);
-    Optional<User> findUserByEmailAndDeleted(String email, boolean deleted);
+    Optional<User> findUserByEmailAndDeleted(String email, boolean isDeleted);
+    List<User> findUserByRole(String role);
+    List<User> findUserByIdAndRole(Long id, String role);
+    Page<User> findUserByRole(String role, Pageable pageable);
 }

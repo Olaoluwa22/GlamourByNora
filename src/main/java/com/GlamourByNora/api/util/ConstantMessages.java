@@ -31,7 +31,8 @@ public enum ConstantMessages {
     DELIVERED("Delivered", 28),
     CANCELLED("Cancelled", 29),
     TRANSACTION_SUCCESSFUL("Transaction Successful",30 ),
-    INPUT_A_NEW_PASSWORD("Input a new password different from your old password", 31);
+    INPUT_A_NEW_PASSWORD("Input a new password different from your old password", 31),
+    ADMIN_PROFILE_CREATED("Admin profile has been created", 32);
 
     private String message;
     private int status;

@@ -50,10 +50,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setPassword(passwordEncoder.encode(signupRequestDto.getPassword()));
         user.setPhoneNumber(signupRequestDto.getPhoneNumber());
         user.setDeleted(false);
-        user.setRole("USER");
+        user.setRole("User");
         try {
-            Optional<User> userInDatabase = userRepository.findUserByEmail(user.getEmail());
-            if (userInDatabase.isPresent()) {
+            Optional<User> optionalUser = userRepository.findUserByEmail(user.getEmail());
+            if (optionalUser.isPresent()) {
                 apiResponseMessages.setMessage(ConstantMessages.EXIST.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }

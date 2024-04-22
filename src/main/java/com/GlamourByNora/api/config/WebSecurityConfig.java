@@ -36,14 +36,16 @@ public class WebSecurityConfig {
                         .requestMatchers("/account/update-password").authenticated()
                         .requestMatchers("/account/**").permitAll()
                         .requestMatchers("/user/getAllUsers", "/user/page-list", "/user/{id}", "/user/delete/{id}").authenticated()
-                        .requestMatchers("/user/getAllUsers", "/user/page-list", "/user/{id}", "/user/delete/{id}").hasRole("ADMIN")
+                        .requestMatchers("/user/getAllUsers", "/user/page-list", "/user/{id}", "/user/delete/{id}").hasRole("Admin")
                         .requestMatchers("/user/updateInfo/{id}").authenticated()
                         .requestMatchers("/product/create-a-product", "/product/update/{id}", "/product/delete/{id}").authenticated()
-                        .requestMatchers("/product/create-a-product", "/product/update/{id}", "/product/delete/{id}").hasRole("ADMIN")
+                        .requestMatchers("/product/create-a-product", "/product/update/{id}", "/product/delete/{id}").hasRole("Admin")
                         .requestMatchers("/product/list-of-products", "/product/{productId}", "/product/page-list").permitAll()
                         .requestMatchers("/cart/*").permitAll()
                         .requestMatchers("/payment/checkout").permitAll()
                         .requestMatchers("/payment/**").authenticated()
+                        .requestMatchers("/admin/**").authenticated()
+                        .requestMatchers("/admin/**").hasRole("Admin")
                         .anyRequest().authenticated()
                 );
         return httpSecurity.build();

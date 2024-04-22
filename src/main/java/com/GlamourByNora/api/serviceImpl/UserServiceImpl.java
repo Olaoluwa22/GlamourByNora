@@ -141,12 +141,12 @@ public class UserServiceImpl implements UserService {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.DELETED.getMessage());
         try {
-            Optional<User> byId = userRepository.findById(userId);
-            if (byId.isEmpty()) {
+            Optional<User> optionalUser = userRepository.findById(userId);
+            if (optionalUser.isEmpty()) {
                 apiResponseMessages.setMessage(ConstantMessages.NOT_FOUND.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
-            User user = byId.get();
+            User user = optionalUser.get();
             user.setDeleted(true);
             userRepository.save(user);
             apiResponseMessages.setMessage(ConstantMessages.DELETED.getMessage());

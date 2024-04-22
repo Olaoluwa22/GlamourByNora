@@ -1,65 +1,42 @@
 package com.GlamourByNora.api.controller;
 
 import com.GlamourByNora.api.dto.AdminDto;
-import com.GlamourByNora.api.model.Admin;
-import com.GlamourByNora.api.repository.AdminRepository;
+import com.GlamourByNora.api.model.User;
+import com.GlamourByNora.api.repository.UserRepository;
+import com.GlamourByNora.api.service.AdminService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
+@RequestMapping("/admin")
 public class AdminController {
 
     @Autowired
-    private AdminRepository adminRepository;
-    @GetMapping("/admins")
-    public List<Admin> getUsers(){
-        return adminRepository.findAll();
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private AdminService adminService;
+    @PostMapping("/create-admin-profile")
+    public ResponseEntity<?> createAdminProfile(@Valid @RequestBody AdminDto adminDto){
+        return adminService.createAdminProfile(adminDto);
     }
-    @GetMapping("/admin/get")
-    public Page<Admin> getAdminByPageable(@RequestParam int page, @RequestParam int size){
-        Pageable pageable = PageRequest.of(page,size);
-        return adminRepository.findAll(pageable);
+    @GetMapping("/{id}")
+    public List<User> getAdminById(@PathVariable(name ="id") Long id){
+        return adminService.getAdminById(id);
     }
-    @GetMapping("/admin/{id}")
-    public Optional<Admin> getAdminById(@PathVariable(name ="id") Long adminId){
-        return adminRepository.findById(adminId);
+    @GetMapping("/getAllAdmins")
+    public List<User> getAllAdmins(){
+        return adminService.getAllAdmins();
     }
-    @PostMapping("/admin/create")
-    public String createAdmin(@Valid @RequestBody AdminDto adminDto){
-        Admin admin = new Admin();
-        admin.setFirstname(adminDto.getFirstname());
-        admin.setLastname(adminDto.getLastname());
-        admin.setCountry(adminDto.getCountry());
-        admin.setState(adminDto.getState());
-        admin.setAddress(adminDto.getAddress());
-        admin.setEmail(adminDto.getEmail());
-        admin.setPhone_no(adminDto.getPhone_no());
-        adminRepository.save(admin);
-        return "New Admin created...";
-    }
-    @PutMapping("/admin/update/{id}")
-    public String updateAdminInfo( @Valid @PathVariable(name="id")Long id, @RequestBody AdminDto adminDto){
-        Admin admin = adminRepository.findById(id).get();
-        admin.setFirstname(adminDto.getFirstname());
-        admin.setLastname(adminDto.getLastname());
-        admin.setCountry(adminDto.getCountry());
-        admin.setState(adminDto.getState());
-        admin.setAddress(adminDto.getAddress());
-        admin.setEmail(adminDto.getEmail());
-        admin.setPhone_no(adminDto.getPhone_no());
-        adminRepository.save(admin);
-        return "Admin info updated...";
-    }
-    @DeleteMapping("/admin/delete/{id}")
-    public String deleteAdmin(@PathVariable(name ="id")Long id){
-        adminRepository.deleteById(id);
-        return "Admin"+id+"'s info has been deleted Successfully...";
+    @GetMapping("/getAdminByPageable")
+    public Page<User> getAdminByPageable(@RequestParam int page, @RequestParam int size){
+        return adminService.getAdminByPageable(page, size);
     }
 }
