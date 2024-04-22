@@ -2,8 +2,6 @@ package com.GlamourByNora.api.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,9 +26,6 @@ public class User {
     private String email;
     @Column(length = 13, nullable = false)
     private Long phoneNumber;
-    @Column(length = 50, nullable = false)
-    @Size(min = 8)
-    @Pattern(regexp="[a-zA-Z0-9]{8,}")
     private String password;
     private String role;
     private boolean deleted;
