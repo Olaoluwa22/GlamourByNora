@@ -21,7 +21,6 @@ public class JwtBlacklistServiceImpl implements JwtBlacklistService {
     @Override
     public void invalidateToken(HttpServletRequest request) {
         String token = jwtTokenService.resolveToken(request);
-        jwtTokenService.expireThisToken(token);
         JwtBlacklist blacklist = new JwtBlacklist();
         blacklist.setToken(token);
         blacklist.setInvalidatedAt(new Date());
@@ -38,13 +37,3 @@ public class JwtBlacklistServiceImpl implements JwtBlacklistService {
         jwtBlacklistRepository.deleteAll();
     }
 }
-
-
-
-
-
-
-
-
-
-

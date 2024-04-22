@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -15,18 +16,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    @Autowired
     private JwtTokenService jwtTokenService;
+    @Autowired
     private JwtBlacklistService jwtBlacklistService;
-    public JwtAuthenticationFilter(JwtTokenService jwtTokenService, JwtBlacklistService jwtBlacklistService) {
-        this.jwtTokenService = jwtTokenService;
-        this.jwtBlacklistService = jwtBlacklistService;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try{
             String token = jwtTokenService.resolveToken(request);
-            if(token != null && jwtTokenService.isTokenExpired(token) && jwtBlacklistService.isTokenNotBlacklisted(token)){
+            if(token != null && jwtTokenService.isTokenNotExpired(token) && jwtBlacklistService.isTokenNotBlacklisted(token)){
                 Authentication jwtServiceAuthentication = jwtTokenService.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(jwtServiceAuthentication);
             }

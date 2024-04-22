@@ -40,7 +40,7 @@ public class JwtTokenService {
     public String getUsername(String token){
         return Jwts.parser().setSigningKey(SECRETKEY).parseClaimsJws(token).getBody().getSubject();
     }
-    public boolean isTokenExpired(String token){
+    public boolean isTokenNotExpired(String token){
         Jws<Claims> claims = Jwts.parser().setSigningKey(SECRETKEY).parseClaimsJws(token);
         return !claims.getBody().getExpiration().before(new Date());
     }
@@ -58,14 +58,5 @@ public class JwtTokenService {
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRETKEY);
         return Keys.hmacShaKeyFor(keyBytes);
-    }
-    public void expireThisToken(String token){
-        Jws<Claims> parsedClaimsJws = Jwts.parser().setSigningKey(SECRETKEY).parseClaimsJws(token);
-        Claims claim = parsedClaimsJws.getBody();
-        claim.setExpiration(new Date());
-        Jwts.builder()
-                .setClaims(claim)
-                .signWith(getSignKey(), SignatureAlgorithm.HS256)
-                .compact();
     }
 }
