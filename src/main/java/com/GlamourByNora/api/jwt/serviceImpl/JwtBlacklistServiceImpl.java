@@ -6,6 +6,7 @@ import com.GlamourByNora.api.model.JwtBlacklist;
 import com.GlamourByNora.api.repository.JwtBlacklistRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -31,4 +32,19 @@ public class JwtBlacklistServiceImpl implements JwtBlacklistService {
         Optional<JwtBlacklist> optionalToken = jwtBlacklistRepository.findTokenBlacklistByToken(token);
         return optionalToken.isEmpty();
     }
+    @Override
+    @Scheduled(fixedRate = (1000*60*60*24*3)) //3days interval for a scheduled cleanup
+    public void cleanupBlacklistedToken() {
+        jwtBlacklistRepository.deleteAll();
+    }
 }
+
+
+
+
+
+
+
+
+
+

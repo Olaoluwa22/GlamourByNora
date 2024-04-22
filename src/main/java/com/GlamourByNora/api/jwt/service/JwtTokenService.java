@@ -28,7 +28,7 @@ public class JwtTokenService {
         claims.setSubject(email);
         claims.put("roles", roles);
         Date issuedDate = new Date();
-        Date expiresAt = new Date(issuedDate.getTime() + 3600000);
+        Date expiresAt = new Date(issuedDate.getTime() + (1000 * 60 * 10));
         String token = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(issuedDate)
