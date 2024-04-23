@@ -2,6 +2,7 @@ package com.GlamourByNora.api.util;
 
 import com.GlamourByNora.api.exception.exceptionHandler.OrderNotFoundException;
 import com.GlamourByNora.api.exception.exceptionHandler.ProductNotFoundException;
+import com.GlamourByNora.api.exception.exceptionHandler.RequestedListIsEmptyException;
 import com.GlamourByNora.api.exception.exceptionHandler.UserNotFoundException;
 import com.GlamourByNora.api.model.OTP;
 import com.GlamourByNora.api.model.Order;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -65,5 +67,16 @@ public class InfoGetter {
             throw new BadCredentialsException("OTP not correct");
         }
         return optionalOTP.get();
+    }
+    public List<Order> getOrderByStatus(String status){
+        Optional<List<Order>> optionalOrderList = orderRepository.findOrderByStatus(status);
+        if (optionalOrderList.isEmpty()){
+            try {
+                throw new RequestedListIsEmptyException("No orders in "+status);
+            } catch (RequestedListIsEmptyException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return optionalOrderList.get();
     }
 }

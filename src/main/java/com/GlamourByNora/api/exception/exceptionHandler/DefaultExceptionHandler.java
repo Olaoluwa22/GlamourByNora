@@ -87,4 +87,13 @@ public class DefaultExceptionHandler {
         exceptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(RequestedListIsEmptyException.class)
+    public ResponseEntity<?> requestedListIsEmptyException(RequestedListIsEmptyException exception){
+        ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();
+        exceptionResponse.setTimestamp(Instant.now());
+        exceptionResponse.setMessage("Requested List is empty.");
+        exceptionResponse.setStatus(HttpStatus.FORBIDDEN.value());
+        exceptionResponse.setData(null);
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
+    }
 }

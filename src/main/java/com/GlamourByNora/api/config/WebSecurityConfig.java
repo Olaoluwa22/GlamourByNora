@@ -46,6 +46,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/payment/**").authenticated()
                         .requestMatchers("/admin/**").authenticated()
                         .requestMatchers("/admin/**").hasRole("Admin")
+                        .requestMatchers("/order_management/**").authenticated()
+                        .requestMatchers("/order_management/**").hasRole("Admin")
                         .anyRequest().authenticated()
                 );
         return httpSecurity.build();
