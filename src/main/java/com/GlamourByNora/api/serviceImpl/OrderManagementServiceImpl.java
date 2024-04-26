@@ -17,6 +17,10 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     @Autowired
     private InfoGetter infoGetter;
     @Override
+    public Order getOrderByReference(String reference){
+        return infoGetter.getOrderByReference(reference);
+    }
+    @Override
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }

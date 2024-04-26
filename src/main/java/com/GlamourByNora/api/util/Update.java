@@ -31,12 +31,12 @@ public class Update {
         HttpSession session = request.getSession(false);
         List<CartItems> cartItems = (List<CartItems>) session.getAttribute("cart");
         for (int i = 0; i < cartItems.size(); i++) {
-            Optional<Product> optionalDatabaseProduct = productRepository.findProductById(cartItems.get(i).getProductId());
-            Product product = optionalDatabaseProduct.get();
+            Optional<Product> optionalProduct = productRepository.findProductById(cartItems.get(i).getProductId());
+            Product product = optionalProduct.get();
             int newStockQuantity = (product.getStockQuantity() - cartItems.get(i).getQuantity());
             product.setStockQuantity(newStockQuantity);
             productRepository.save(product);
-            session.invalidate();
         }
+        session.invalidate();
     }
 }

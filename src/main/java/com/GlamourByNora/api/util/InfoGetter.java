@@ -36,6 +36,13 @@ public class InfoGetter {
         }
         return optionalUser.get();
     }
+    public User getUserById(Long userId){
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException("User not found");
+        }
+        return optionalUser.get();
+    }
     public User getUserByEmailAndDeleted(String username, boolean isDeleted){
         Optional<User> optionalUser = userRepository.findUserByEmailAndDeleted(username, false);
         if (optionalUser.isEmpty()) {
@@ -43,9 +50,26 @@ public class InfoGetter {
         }
         return optionalUser.get();
     }
+    public User getUserByIdAndDeleted(Long userId, boolean isDeleted){
+        Optional<User> optionalUser = userRepository.findUserByIdAndDeleted(userId, false);
+        if (optionalUser.isEmpty()) {
+            throw new BadCredentialsException("No user found");
+        }
+        if (optionalUser.get().isDeleted()) {
+            throw new BadCredentialsException("This is already a account...");
+        }
+        return optionalUser.get();
+    }
     public Order getOrder(Long userId){
         Optional<Order> optionalOrder = orderRepository.findOrderByUserId(userId);
         if (optionalOrder.isEmpty() || !optionalOrder.get().getStatus().equalsIgnoreCase("Processing")){
+            throw new OrderNotFoundException("Order not found");
+        }
+        return optionalOrder.get();
+    }
+    public Order getOrderByReference(String reference){
+        Optional<Order> optionalOrder = orderRepository.findOrderByReference(reference);
+        if (optionalOrder.isEmpty()){
             throw new OrderNotFoundException("Order not found");
         }
         return optionalOrder.get();

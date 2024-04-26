@@ -2,7 +2,6 @@ package com.GlamourByNora.api.controller;
 
 import com.GlamourByNora.api.dto.UserDto;
 import com.GlamourByNora.api.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,23 +15,27 @@ public class UserController {
     }
 
     @GetMapping("/getAllUsers")
-    public ResponseEntity<?> getUsers(HttpServletRequest request) throws Exception {
-        return userService.getUsers(request);
+    public ResponseEntity<?> getUsers() {
+        return userService.getUsers();
     }
     @GetMapping("/page-list")
-    public ResponseEntity<?> getUserByPageable(@RequestParam int page, @RequestParam int size, HttpServletRequest request) throws Exception {
-       return userService.getUserByPageable(page, size, request);
+    public ResponseEntity<?> getUserByPageable(@RequestParam int page, @RequestParam int size) {
+       return userService.getUserByPageable(page, size);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable(name ="id") Long userId, HttpServletRequest request) throws Exception {
-        return userService.getUserById(userId, request);
+    public ResponseEntity<?> getUserById(@PathVariable(name ="id") Long userId) {
+        return userService.getUserById(userId);
     }
-    @PutMapping("/updateInfo/{id}")
-    public ResponseEntity<?> updateUserInfo( @Valid @PathVariable(name="id")Long id, @RequestBody UserDto userDto, HttpServletRequest request) throws Exception {
-        return userService.updateUserInfo(id, userDto, request);
+    @PutMapping("/updateUserInfo/{id}")
+    public ResponseEntity<?> updateUserInfo( @Valid @PathVariable(name="id")Long id, @RequestBody UserDto userDto){
+        return userService.updateUserInfo(id, userDto);
+    }
+    @PutMapping("/update-personal-info")
+    public ResponseEntity<?> updatePersonalInfo( @Valid @RequestBody UserDto userDto) {
+        return userService.updatePersonalInfo(userDto);
     }
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable(name ="id")Long id, HttpServletRequest request) throws Exception {
-       return userService.deleteUser(id, request);
+    public ResponseEntity<?> deleteUser(@PathVariable(name ="id")Long id) {
+       return userService.deleteUser(id);
     }
 }

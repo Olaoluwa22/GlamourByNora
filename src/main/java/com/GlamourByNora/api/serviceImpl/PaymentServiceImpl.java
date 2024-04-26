@@ -80,7 +80,7 @@ public class PaymentServiceImpl implements PaymentService {
         Order order = new Order();
         order.setReference(new OrderReference().generateOrderReference());
         order.setQuantityOfProductsOrdered(cartItems.size());
-        order.setStatus(apiResponseMessages.setMessage(ConstantMessages.PROCESSING.getMessage()));
+        order.setStatus(ConstantMessages.PROCESSING.getMessage());
         order.setValue(validateQuantityAndGetTotalValue(request));
         order.setUser(user);
         order.setCreatedAt(Instant.now());
@@ -120,7 +120,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new NotAuthorizedException("Error Occurred while initializing transaction");
 
         } catch (IOException ex) {
-            throw new IOException("Failure initializaing paystack transaction");
+            throw new IOException("Failure initializing paystack transaction");
         }
         return paymentUrl;
     }
@@ -191,27 +191,3 @@ public class PaymentServiceImpl implements PaymentService {
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

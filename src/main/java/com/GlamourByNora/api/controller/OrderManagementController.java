@@ -4,6 +4,7 @@ import com.GlamourByNora.api.model.Order;
 import com.GlamourByNora.api.service.OrderManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +16,10 @@ public class OrderManagementController {
     @Autowired
     private OrderManagementService orderManagementService;
 
+    @GetMapping("/order-by-reference")
+    public Order getOrderByReference(@RequestBody String reference){
+        return orderManagementService.getOrderByReference(reference);
+    }
     @GetMapping("/all-orders")
     public List<Order> getAllOrders(){
         return orderManagementService.getAllOrders();

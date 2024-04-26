@@ -70,11 +70,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public ResponseEntity<?> login(AuthenticationDto authenticationDto, HttpServletResponse response, HttpServletRequest request) {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
-        apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
+        apiResponseMessages.setMessage(ConstantMessages.INCORRECT.getMessage());
         try {
             User user = infoGetter.getUserByEmailAndDeleted(authenticationDto.getUsername(), false);
             if (!authenticationDto.getPassword().equals(user.getPassword())) {
-                apiResponseMessages.setMessage(ConstantMessages.INCORRECT.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
             String token = jwtTokenService.createToken(user.getEmail(), user.getRoleAsList());
@@ -85,7 +84,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ResponseEntity<>(apiResponseMessages, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
     }
     @Override
     public ResponseEntity<?> logout(HttpServletRequest request) {
