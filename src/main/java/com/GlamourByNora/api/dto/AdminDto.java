@@ -7,34 +7,28 @@ public class AdminDto {
     private Long id;
     @NotBlank
     @NotNull
-    @NotEmpty
     private String firstname;
     @NotBlank
     @NotNull
-    @NotEmpty
     private String lastname;
     @NotBlank
     @NotNull
-    @NotEmpty
     private String country;
     @NotBlank
     @NotNull
-    @NotEmpty
     private String state;
     @NotBlank
     @NotNull
-    @NotEmpty
     private String address;
     @NotBlank
     @NotNull
-    @NotEmpty
     private String email;
     @Column(length = 50, nullable = false)
     @Size(min = 8)
     @Pattern(regexp="[a-zA-Z0-9]{8,}")
     private String password;
     @NotNull
-    private Long phone_no;
+    private Long phoneNumber;
 
     public Long getId() {
         return id;
@@ -84,11 +78,11 @@ public class AdminDto {
     public void setPassword(String password) {
         this.password = password;
     }
-    public Long getPhone_no() {
-        return phone_no;
+    public Long getPhoneNumber() {
+        return phoneNumber;
     }
-    public void setPhone_no(Long phone_no) {
-        this.phone_no = phone_no;
+    public void setPhoneNumber(Long phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
     @Override
     public String toString() {
@@ -101,7 +95,7 @@ public class AdminDto {
                 ", address='" + address + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", phone_no=" + phone_no +
+                ", phoneNumber=" + phoneNumber +
                 '}';
     }
 }

@@ -37,7 +37,7 @@ public class AdminServiceImpl implements AdminService {
         user.setAddress(adminDto.getAddress());
         user.setEmail(adminDto.getEmail());
         user.setPassword(passwordEncoder.encode(adminDto.getPassword()));
-        user.setPhoneNumber(adminDto.getPhone_no());
+        user.setPhoneNumber(adminDto.getPhoneNumber());
         user.setRole("Admin");
         try {
             Optional<User> optionalUser = userRepository.findUserByEmail(user.getEmail());

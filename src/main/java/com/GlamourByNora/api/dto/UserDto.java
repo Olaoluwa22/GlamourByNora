@@ -6,27 +6,21 @@ public class UserDto {
     private Long id;
     @NotBlank
     @NotNull
-    @NotEmpty
     private String firstName;
     @NotBlank
     @NotNull
-    @NotEmpty
     private String lastName;
     @NotBlank
     @NotNull
-    @NotEmpty
     private String country;
     @NotBlank
     @NotNull
-    @NotEmpty
     private String state;
     @NotBlank
     @NotNull
-    @NotEmpty
     private String address;
     @NotBlank
     @NotNull
-    @NotEmpty
     private String email;
     @NotBlank
     private String password;

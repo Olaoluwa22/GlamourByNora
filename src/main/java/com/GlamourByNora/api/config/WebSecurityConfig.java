@@ -44,8 +44,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/payment/**").authenticated()
                         .requestMatchers("/admin/**").hasAuthority("Admin")
                         .requestMatchers("/order_management/**").hasAuthority("Admin")
-                        .anyRequest().authenticated()
-                );
+                        .anyRequest().authenticated());
         return httpSecurity.build();
     }
     @Bean
