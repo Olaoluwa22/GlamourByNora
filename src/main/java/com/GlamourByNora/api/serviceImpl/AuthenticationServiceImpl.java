@@ -73,14 +73,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         apiResponseMessages.setMessage(ConstantMessages.INCORRECT.getMessage());
         try {
             User user = infoGetter.getUserByEmailAndDeleted(authenticationDto.getUsername(), false);
-            if (!authenticationDto.getPassword().equals(user.getPassword())) {
+            if (!passwordEncoder.matches(authenticationDto.getPassword(), user.getPassword())) {
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.BAD_REQUEST);
             }
             String token = jwtTokenService.createToken(user.getEmail(), user.getRoleAsList());
             apiResponseMessages.setData(token);
             apiResponseMessages.setMessage(ConstantMessages.USER_LOGGED_IN_SUCCESSFULLY.getMessage());
             return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
-
         } catch (Exception e) {
             e.printStackTrace();
         }

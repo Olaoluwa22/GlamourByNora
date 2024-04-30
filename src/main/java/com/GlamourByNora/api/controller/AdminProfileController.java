@@ -3,7 +3,7 @@ package com.GlamourByNora.api.controller;
 import com.GlamourByNora.api.dto.AdminDto;
 import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.UserRepository;
-import com.GlamourByNora.api.service.AdminService;
+import com.GlamourByNora.api.service.AdminProfileService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,28 +15,28 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
-public class AdminController {
+public class AdminProfileController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private AdminService adminService;
+    private AdminProfileService adminProfileService;
     @PostMapping("/create-admin-profile")
     public ResponseEntity<?> createAdminProfile(@Valid @RequestBody AdminDto adminDto){
-        return adminService.createAdminProfile(adminDto);
+        return adminProfileService.createAdminProfile(adminDto);
     }
     @GetMapping("/{id}")
     public List<User> getAdminById(@PathVariable(name ="id") Long id){
-        return adminService.getAdminById(id);
+        return adminProfileService.getAdminById(id);
     }
     @GetMapping("/getAllAdmins")
     public List<User> getAllAdmins(){
-        return adminService.getAllAdmins();
+        return adminProfileService.getAllAdmins();
     }
     @GetMapping("/getAdminByPageable")
     public Page<User> getAdminByPageable(@RequestParam int page, @RequestParam int size){
-        return adminService.getAdminByPageable(page, size);
+        return adminProfileService.getAdminByPageable(page, size);
     }
 }

@@ -36,7 +36,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/account/update-password").authenticated()
                         .requestMatchers("/account/**").permitAll()
                         .requestMatchers("/user/update-personal-info").hasAnyAuthority("Admin", "User")
-                        .requestMatchers("/user/getAllUsers", "/user/page-list", "/user/{id}", "/user/delete/{id}", "/user/updateUserInfo/{id}").hasAuthority("Admin")
+                        .requestMatchers("/user_management/getAllUsers", "/user_management/page-list",
+                                "/user_management/{id}", "/user_management/delete/{id}", "/user_management/updateUserInfo/{id}").hasAuthority("Admin")
                         .requestMatchers("/product/list-of-products", "/product/{productId}", "/product/page-list").permitAll()
                         .requestMatchers("/product/create-a-product", "/product/update/{id}", "/product/delete/{id}").hasAuthority("Admin")
                         .requestMatchers("/cart/*").permitAll()

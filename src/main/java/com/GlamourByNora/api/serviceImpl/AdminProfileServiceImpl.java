@@ -5,7 +5,7 @@ import com.GlamourByNora.api.exception.exceptionHandler.EmailAlreadyExistExcepti
 import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.UserRepository;
 import com.GlamourByNora.api.response.ApiResponseMessages;
-import com.GlamourByNora.api.service.AdminService;
+import com.GlamourByNora.api.service.AdminProfileService;
 import com.GlamourByNora.api.util.ConstantMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AdminServiceImpl implements AdminService {
+public class AdminProfileServiceImpl implements AdminProfileService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired

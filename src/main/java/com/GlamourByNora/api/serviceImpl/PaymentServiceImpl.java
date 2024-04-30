@@ -92,7 +92,7 @@ public class PaymentServiceImpl implements PaymentService {
         paystackTransactionRequestDto.setAmount(order.getValue()*100);
         paystackTransactionRequestDto.setEmail(user.getEmail());
         paystackTransactionRequestDto.setReference(order.getReference());
-        paystackTransactionRequestDto.setCallback_url("http://localhost:8080/verify-payment/"+order.getReference());
+//        paystackTransactionRequestDto.setCallback_url("http://localhost:8081/verify-payment/");
         try {
             Gson gson = new Gson();
             StringEntity postingData = new StringEntity(gson.toJson(paystackTransactionRequestDto));
@@ -149,7 +149,7 @@ public class PaymentServiceImpl implements PaymentService {
         return new ResponseEntity<>(paymentUrl, HttpStatus.OK);
     }
     @Override
-    public ResponseEntity<?> verifyPaystackTransaction(String reference, HttpServletRequest httpRequest) throws InterruptedException {
+    public ResponseEntity<?> verifyPaystackTransaction(HttpServletRequest httpRequest) throws InterruptedException {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         User user = infoGetter.getUser(userService.getUsernameOfLoggedInUser());
@@ -157,7 +157,7 @@ public class PaymentServiceImpl implements PaymentService {
         PaystackVerificationResponseDto paystackVerificationResponseDto = null;
         try {
             CloseableHttpClient client = HttpClientBuilder.create().build();
-            HttpGet request = new HttpGet("https://api.paystack.co/transaction/verify/" + reference);
+            HttpGet request = new HttpGet("https://api.paystack.co/transaction/verify/"+order.getReference());
             request.addHeader("Content-type", "application/json");
             request.addHeader("Authorization", "Bearer sk_test_b5756e19ed7f96c84b253095358de89a137f8252");
             StringBuilder dataReceived = new StringBuilder();
@@ -176,8 +176,6 @@ public class PaymentServiceImpl implements PaymentService {
             paystackVerificationResponseDto = mapper.readValue(dataReceived.toString(), PaystackVerificationResponseDto.class);
             if (paystackVerificationResponseDto == null || paystackVerificationResponseDto.getStatus().equals("false")) {
                 throw new InterruptedException("An error occurred while verifying payment");
-            } else if (!paystackVerificationResponseDto.getPaystackVerificationData().getAmount().equals(String.valueOf(order.getValue()))) {
-                throw new NumberFormatException("Amount paid does not equal order value");
             } else if (paystackVerificationResponseDto.getPaystackVerificationData().getStatus().equals("success")) {
                 Update update = new Update();
                 update.updateOrder(order, paystackVerificationResponseDto.getPaystackVerificationData().getTransaction_date());

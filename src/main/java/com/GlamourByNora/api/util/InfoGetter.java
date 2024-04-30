@@ -61,7 +61,7 @@ public class InfoGetter {
         return optionalUser.get();
     }
     public Order getOrder(Long userId){
-        Optional<Order> optionalOrder = orderRepository.findOrderByUserId(userId);
+        Optional<Order> optionalOrder = orderRepository.findByUserId(userId);
         if (optionalOrder.isEmpty() || !optionalOrder.get().getStatus().equalsIgnoreCase("Processing")){
             throw new OrderNotFoundException("Order not found");
         }

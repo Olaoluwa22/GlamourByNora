@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-public interface AdminService {
+public interface AdminProfileService {
     ResponseEntity<?> createAdminProfile(AdminDto adminDto);
     List<User> getAdminById(Long id);
     List<User> getAllAdmins();

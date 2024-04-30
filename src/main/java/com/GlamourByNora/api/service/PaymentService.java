@@ -8,5 +8,5 @@ import org.springframework.http.ResponseEntity;
 public interface PaymentService {
     ResponseEntity<?> checkout(HttpServletRequest request);
     ResponseEntity<?> proceedToPayment(HttpServletRequest request, PaystackTransactionRequestDto paystackTransactionRequestDto) throws NotAuthorizedException;
-    ResponseEntity<?> verifyPaystackTransaction(String reference, HttpServletRequest request) throws InterruptedException;
+    ResponseEntity<?> verifyPaystackTransaction(HttpServletRequest request) throws InterruptedException;
 }

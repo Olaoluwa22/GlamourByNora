@@ -32,7 +32,7 @@ public class JwtBlacklistServiceImpl implements JwtBlacklistService {
         return optionalToken.isEmpty();
     }
     @Override
-    @Scheduled(fixedRate = 259200000) //3days interval for a scheduled cleanup
+    @Scheduled(fixedRate = 3*24*60*60*1000) //3days interval for a scheduled cleanup
     public void cleanupBlacklistedToken() {
         jwtBlacklistRepository.deleteAll();
     }

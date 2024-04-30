@@ -7,10 +7,11 @@ import com.GlamourByNora.api.repository.OrderRepository;
 import com.GlamourByNora.api.repository.ProductRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-
+@Component
 public class Update {
     private OrderRepository orderRepository;
     private ProductRepository productRepository;

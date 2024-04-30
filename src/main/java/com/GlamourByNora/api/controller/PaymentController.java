@@ -22,8 +22,8 @@ public class PaymentController {
     public ResponseEntity<?> proceedToPayment(HttpServletRequest request, PaystackTransactionRequestDto paystackTransactionRequestDto) throws NotAuthorizedException {
         return paymentService.proceedToPayment(request, paystackTransactionRequestDto);
     }
-    @GetMapping("/verify-payment/{reference}")
-    public ResponseEntity<?> verifyPaystackTransaction(@PathVariable String reference, HttpServletRequest request) throws InterruptedException {
-        return paymentService.verifyPaystackTransaction(reference, request);
+    @GetMapping("/verify-payment")
+    public ResponseEntity<?> verifyPaystackTransaction(HttpServletRequest request) throws InterruptedException {
+        return paymentService.verifyPaystackTransaction(request);
     }
 }
