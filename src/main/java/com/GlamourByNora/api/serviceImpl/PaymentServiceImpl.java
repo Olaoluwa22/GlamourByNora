@@ -86,7 +86,7 @@ public class PaymentServiceImpl implements PaymentService {
         order.setCreatedAt(Instant.now());
         orderRepository.save(order);
     }
-    private String initializeTransaction(PaystackTransactionRequestDto paystackTransactionRequestDto, User user) throws IOException, NotAuthorizedException {
+    private String initializeTransaction(PaystackTransactionRequestDto paystackTransactionRequestDto, User user) throws IOException{
         String paymentUrl = null;
         Order order = infoGetter.getOrder(user.getId());
         paystackTransactionRequestDto.setAmount(order.getValue()*100);
@@ -115,10 +115,6 @@ public class PaymentServiceImpl implements PaymentService {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(dataReceived.toString());
             paymentUrl = rootNode.get("data").get("authorization_url").asText();
-
-        } catch (NotAuthorizedException e) {
-            throw new NotAuthorizedException("Error Occurred while initializing transaction");
-
         } catch (IOException ex) {
             throw new IOException("Failure initializing paystack transaction");
         }
@@ -133,7 +129,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
     @Override
     @Transactional(rollbackOn = {NullPointerException.class, NotAuthorizedException.class})
-    public ResponseEntity<?> proceedToPayment(HttpServletRequest request, PaystackTransactionRequestDto paystackTransactionRequestDto) throws NotAuthorizedException {
+    public ResponseEntity<?> proceedToPayment(HttpServletRequest request, PaystackTransactionRequestDto paystackTransactionRequestDto) throws IOException {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         User user = infoGetter.getUser(userService.getUsernameOfLoggedInUser());
@@ -141,10 +137,8 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             createOrder(request, user);
             paymentUrl = initializeTransaction(paystackTransactionRequestDto, user);
-        } catch (NullPointerException e) {
-            throw new NullPointerException("Cannot be Null");
-        } catch (Exception e) {
-            throw new NotAuthorizedException("Error Occurred while initializing transaction");
+        } catch (IOException e) {
+            throw new IOException("Internal Error");
         }
         return new ResponseEntity<>(paymentUrl, HttpStatus.OK);
     }
@@ -176,9 +170,9 @@ public class PaymentServiceImpl implements PaymentService {
             paystackVerificationResponseDto = mapper.readValue(dataReceived.toString(), PaystackVerificationResponseDto.class);
             if (paystackVerificationResponseDto == null || paystackVerificationResponseDto.getStatus().equals("false")) {
                 throw new InterruptedException("An error occurred while verifying payment");
-            } else if (paystackVerificationResponseDto.getPaystackVerificationData().getStatus().equals("success")) {
+            } else if (paystackVerificationResponseDto.getData().getStatus().equals("success")) {
                 Update update = new Update();
-                update.updateOrder(order, paystackVerificationResponseDto.getPaystackVerificationData().getTransaction_date());
+                update.updateOrder(order, paystackVerificationResponseDto.getData().getPaid_at());
                 update.updateInventory(httpRequest);
                 apiResponseMessages.setMessage(ConstantMessages.TRANSACTION_SUCCESSFUL.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
