@@ -1,6 +1,6 @@
 package com.GlamourByNora.api.controller;
 
-import com.GlamourByNora.api.model.Order;
+import com.GlamourByNora.api.model.CustomerOrder;
 import com.GlamourByNora.api.service.OrderManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,27 +17,27 @@ public class OrderManagementController {
     private OrderManagementService orderManagementService;
 
     @GetMapping("/order-by-reference")
-    public Order getOrderByReference(@RequestBody String reference){
+    public CustomerOrder getOrderByReference(@RequestBody String reference){
         return orderManagementService.getOrderByReference(reference);
     }
     @GetMapping("/all-orders")
-    public List<Order> getAllOrders(){
+    public List<CustomerOrder> getAllOrders(){
         return orderManagementService.getAllOrders();
     }
     @GetMapping("/processing-orders")
-    public List<Order> getProcessingOrders(){
+    public List<CustomerOrder> getProcessingOrders(){
         return orderManagementService.getProcessingOrders();
     }
     @GetMapping("/paid-orders")
-    public List<Order> getPaidOrders(){
+    public List<CustomerOrder> getPaidOrders(){
         return orderManagementService.getPaidOrders();
     }
     @GetMapping("/delivered-orders")
-    public List<Order> getDeliveredOrders(){
+    public List<CustomerOrder> getDeliveredOrders(){
         return orderManagementService.getDeliveredOrders();
     }
     @GetMapping("/cancelled-orders")
-    public List<Order> getCancelledOrders(){
+    public List<CustomerOrder> getCancelledOrders(){
         return orderManagementService.getCancelledOrders();
     }
 }

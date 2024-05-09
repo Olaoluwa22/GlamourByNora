@@ -33,7 +33,7 @@ public class User {
     @JoinColumn(name = "user_id")
     private Cart shoppingCart;
     @OneToMany(mappedBy = "user")
-    private List<Order> orders;
+    private List<CustomerOrder> customerOrders;
 
     public Long getId() {
         return id;
@@ -111,11 +111,11 @@ public class User {
         this.shoppingCart = shoppingCart;
         return shoppingCart;
     }
-    public List<Order> getOrders() {
-        return orders;
+    public List<CustomerOrder> getOrders() {
+        return customerOrders;
     }
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
+    public void setOrders(List<CustomerOrder> customerOrders) {
+        this.customerOrders = customerOrders;
     }
 
     @Override
@@ -131,7 +131,7 @@ public class User {
                 ", phoneNumber=" + phoneNumber +
                 ", password='" + password + '\'' +
                 ", deleted=" + deleted +
-                ", orders=" + orders +
+                ", customerOrders=" + customerOrders +
                 '}';
     }
 }

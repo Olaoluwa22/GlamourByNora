@@ -73,7 +73,7 @@ public class DefaultExceptionHandler {
     public ResponseEntity<?> orderNotFoundException(OrderNotFoundException orderNotFound){
         ExceptionResponse<Map<String, String>> exceptionResponse = new ExceptionResponse<>();
         exceptionResponse.setTimestamp(Instant.now());
-        exceptionResponse.setMessage("Order Not Found...");
+        exceptionResponse.setMessage("CustomerOrder Not Found...");
         exceptionResponse.setData(null);
         exceptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);

@@ -4,8 +4,8 @@ import com.GlamourByNora.api.exception.exceptionHandler.OrderNotFoundException;
 import com.GlamourByNora.api.exception.exceptionHandler.ProductNotFoundException;
 import com.GlamourByNora.api.exception.exceptionHandler.RequestedListIsEmptyException;
 import com.GlamourByNora.api.exception.exceptionHandler.UserNotFoundException;
+import com.GlamourByNora.api.model.CustomerOrder;
 import com.GlamourByNora.api.model.OTP;
-import com.GlamourByNora.api.model.Order;
 import com.GlamourByNora.api.model.Product;
 import com.GlamourByNora.api.model.User;
 import com.GlamourByNora.api.repository.OTPRepository;
@@ -60,19 +60,37 @@ public class InfoGetter {
         }
         return optionalUser.get();
     }
-    public Order getOrder(Long userId){
-        Optional<Order> optionalOrder = orderRepository.findByUserId(userId);
-        if (optionalOrder.isEmpty() || !optionalOrder.get().getStatus().equalsIgnoreCase("Processing")){
-            throw new OrderNotFoundException("Order not found");
+    public CustomerOrder getOrder(Long userId){
+        Optional<CustomerOrder> optionalCustomerOrder = orderRepository.findByUserId(userId);
+        if (optionalCustomerOrder.isEmpty() || !optionalCustomerOrder.get().getStatus().equalsIgnoreCase("Processing")){
+            throw new OrderNotFoundException("CustomerOrder not found");
+        }
+        return optionalCustomerOrder.get();
+    }
+    public CustomerOrder getOrderByUserIdAndStatus(Long userId, String status){
+        Optional<CustomerOrder> optionalCustomerOrder = orderRepository.findByUserIdAndStatus(userId, status);
+        if (optionalCustomerOrder.isEmpty()){
+            throw new OrderNotFoundException("Order not found.");
+        }
+        return optionalCustomerOrder.get();
+    }
+    public CustomerOrder getOrderByReference(String reference){
+        Optional<CustomerOrder> optionalOrder = orderRepository.findOrderByReference(reference);
+        if (optionalOrder.isEmpty()){
+            throw new OrderNotFoundException("CustomerOrder not found");
         }
         return optionalOrder.get();
     }
-    public Order getOrderByReference(String reference){
-        Optional<Order> optionalOrder = orderRepository.findOrderByReference(reference);
-        if (optionalOrder.isEmpty()){
-            throw new OrderNotFoundException("Order not found");
+    public List<CustomerOrder> getOrderByStatus(String status){
+        Optional<List<CustomerOrder>> optionalOrderList = orderRepository.findOrderByStatus(status);
+        if (optionalOrderList.isEmpty()){
+            try {
+                throw new RequestedListIsEmptyException("No orders in "+status);
+            } catch (RequestedListIsEmptyException e) {
+                throw new RuntimeException(e);
+            }
         }
-        return optionalOrder.get();
+        return optionalOrderList.get();
     }
     public Product getProduct(Long productId){
         Optional<Product> optionalProduct = productRepository.findProductById(productId);
@@ -80,7 +98,7 @@ public class InfoGetter {
             try {
                 throw new ProductNotFoundException("Product not found");
             } catch (ProductNotFoundException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
         return optionalProduct.get();
@@ -91,16 +109,5 @@ public class InfoGetter {
             throw new BadCredentialsException("OTP not correct");
         }
         return optionalOTP.get();
-    }
-    public List<Order> getOrderByStatus(String status){
-        Optional<List<Order>> optionalOrderList = orderRepository.findOrderByStatus(status);
-        if (optionalOrderList.isEmpty()){
-            try {
-                throw new RequestedListIsEmptyException("No orders in "+status);
-            } catch (RequestedListIsEmptyException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return optionalOrderList.get();
     }
 }

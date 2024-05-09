@@ -1,6 +1,6 @@
 package com.GlamourByNora.api.serviceImpl;
 
-import com.GlamourByNora.api.model.Order;
+import com.GlamourByNora.api.model.CustomerOrder;
 import com.GlamourByNora.api.repository.OrderRepository;
 import com.GlamourByNora.api.service.OrderManagementService;
 import com.GlamourByNora.api.util.ConstantMessages;
@@ -17,27 +17,27 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     @Autowired
     private InfoGetter infoGetter;
     @Override
-    public Order getOrderByReference(String reference){
+    public CustomerOrder getOrderByReference(String reference){
         return infoGetter.getOrderByReference(reference);
     }
     @Override
-    public List<Order> getAllOrders() {
+    public List<CustomerOrder> getAllOrders() {
         return orderRepository.findAll();
     }
     @Override
-    public List<Order> getProcessingOrders() {
+    public List<CustomerOrder> getProcessingOrders() {
         return infoGetter.getOrderByStatus(ConstantMessages.PROCESSING.getMessage());
     }
     @Override
-    public List<Order> getPaidOrders() {
+    public List<CustomerOrder> getPaidOrders() {
         return infoGetter.getOrderByStatus(ConstantMessages.PAID.getMessage());
     }
     @Override
-    public List<Order> getDeliveredOrders() {
+    public List<CustomerOrder> getDeliveredOrders() {
         return infoGetter.getOrderByStatus(ConstantMessages.DELIVERED.getMessage());
     }
     @Override
-    public List<Order> getCancelledOrders() {
+    public List<CustomerOrder> getCancelledOrders() {
         return infoGetter.getOrderByStatus(ConstantMessages.CANCELLED.getMessage());
     }
 }

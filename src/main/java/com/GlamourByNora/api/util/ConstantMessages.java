@@ -34,7 +34,9 @@ public enum ConstantMessages {
     INPUT_A_NEW_PASSWORD("Input a new password different from your old password", 31),
     ADMIN_PROFILE_CREATED("Admin profile has been created", 32),
     CONFIRMED("Confirmed", 33),
-    ACCOUNT_HAS_BEEN_DELETED("Account has been deleted Successfully", 34);
+    ACCOUNT_HAS_BEEN_DELETED("Account has been deleted Successfully", 34),
+    BAD_REQUEST("Bad Request", 35),
+    INTERNAL_SERVER_ERROR("Internal Server Error", 36);
 
     private String message;
     private int status;

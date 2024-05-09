@@ -27,7 +27,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     @Override
     public void sendOrderConfirmationMail(String email, String confirmationMail) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setSubject("Order Confirmation");
+        mailMessage.setSubject("CustomerOrder Confirmation");
         mailMessage.setFrom("GlamourByNora@gmail.com");
         mailMessage.setTo(email);
         mailMessage.setText(confirmationMail);

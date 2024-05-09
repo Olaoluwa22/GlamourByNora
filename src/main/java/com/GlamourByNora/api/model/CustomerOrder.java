@@ -6,8 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 
 @Entity
-@Table(name = "`order`")
-public class Order {
+public class CustomerOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -76,7 +75,7 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order{" +
+        return "CustomerOrder{" +
                 "id=" + id +
                 ", reference='" + reference + '\'' +
                 ", quantityOfProductsOrdered=" + quantityOfProductsOrdered +

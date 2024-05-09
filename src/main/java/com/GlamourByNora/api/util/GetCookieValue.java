@@ -7,11 +7,11 @@ public class GetCookieValue {
     @Value("${app.cookie.login}")
     private String loginCookieName;
     public String getCookieValue(HttpServletRequest request){
-        Cookie[] cookie = request.getCookies();
+        Cookie[] cookies = request.getCookies();
         Cookie value = null;
-        for (Cookie cookies : cookie) {
-            if (cookies.getName().equalsIgnoreCase("userEmail")) {
-                value = cookies;
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equalsIgnoreCase("userEmail")) {
+                value = cookie;
                 break;
             }
         }

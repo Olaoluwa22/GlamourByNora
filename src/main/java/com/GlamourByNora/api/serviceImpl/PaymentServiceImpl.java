@@ -4,9 +4,11 @@ import com.GlamourByNora.api.dto.PaystackTransactionRequestDto;
 import com.GlamourByNora.api.dto.PaystackVerificationResponseDto;
 import com.GlamourByNora.api.exception.exceptionHandler.NotAuthorizedException;
 import com.GlamourByNora.api.exception.exceptionHandler.OrderNotFoundException;
-import com.GlamourByNora.api.model.Order;
+import com.GlamourByNora.api.model.Cart;
+import com.GlamourByNora.api.model.CustomerOrder;
 import com.GlamourByNora.api.model.Product;
 import com.GlamourByNora.api.model.User;
+import com.GlamourByNora.api.repository.CartRepository;
 import com.GlamourByNora.api.repository.OrderRepository;
 import com.GlamourByNora.api.repository.ProductRepository;
 import com.GlamourByNora.api.repository.UserRepository;
@@ -36,6 +38,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,6 +55,8 @@ public class PaymentServiceImpl implements PaymentService {
     private UserService userService;
     @Autowired
     private InfoGetter infoGetter;
+    @Autowired
+    private CartRepository cartRepository;
 
     private int validateQuantityAndGetTotalValue(HttpServletRequest request){
         HttpSession session = request.getSession(false);
@@ -70,6 +75,21 @@ public class PaymentServiceImpl implements PaymentService {
         }
         return totalValue;
     }
+    private void extractCartItemsInSessionAndSaveToCartInDatabase(HttpServletRequest request, User user) {
+        Cart cart = new Cart();
+        List<Product> products = new ArrayList<>();
+        HttpSession session = request.getSession(false);
+        List<CartItems> cartItems = (List<CartItems>) session.getAttribute("cart");
+        for (int i = 0; i < cartItems.size(); i++) {
+            CartItems currentCartItem = cartItems.get(i);
+            Product product = infoGetter.getProduct(currentCartItem.getProductId());
+            products.add(product);
+        }
+        cart.setProducts(products);
+        cart.setUser(user);
+        cartRepository.save(cart);
+        session.invalidate();
+    }
     private void createOrder(HttpServletRequest request, User user) throws NullPointerException{
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         HttpSession session = request.getSession(false);
@@ -77,21 +97,21 @@ public class PaymentServiceImpl implements PaymentService {
         if(cartItems.isEmpty()){
             throw new NullPointerException();
         }
-        Order order = new Order();
-        order.setReference(new OrderReference().generateOrderReference());
-        order.setQuantityOfProductsOrdered(cartItems.size());
-        order.setStatus(ConstantMessages.PROCESSING.getMessage());
-        order.setValue(validateQuantityAndGetTotalValue(request));
-        order.setUser(user);
-        order.setCreatedAt(Instant.now());
-        orderRepository.save(order);
+        CustomerOrder customerOrder = new CustomerOrder();
+        customerOrder.setReference(new OrderReference().generateOrderReference());
+        customerOrder.setQuantityOfProductsOrdered(cartItems.size());
+        customerOrder.setStatus(ConstantMessages.PROCESSING.getMessage());
+        customerOrder.setValue(validateQuantityAndGetTotalValue(request));
+        customerOrder.setUser(user);
+        customerOrder.setCreatedAt(Instant.now());
+        orderRepository.save(customerOrder);
     }
     private String initializeTransaction(PaystackTransactionRequestDto paystackTransactionRequestDto, User user) throws IOException{
         String paymentUrl = null;
-        Order order = infoGetter.getOrder(user.getId());
-        paystackTransactionRequestDto.setAmount(order.getValue()*100);
+        CustomerOrder customerOrder = infoGetter.getOrderByUserIdAndStatus(user.getId(), ConstantMessages.PROCESSING.getMessage());
+        paystackTransactionRequestDto.setAmount(customerOrder.getValue()*100);
         paystackTransactionRequestDto.setEmail(user.getEmail());
-        paystackTransactionRequestDto.setReference(order.getReference());
+        paystackTransactionRequestDto.setReference(customerOrder.getReference());
 //        paystackTransactionRequestDto.setCallback_url("http://localhost:8081/verify-payment/");
         try {
             Gson gson = new Gson();
@@ -128,13 +148,14 @@ public class PaymentServiceImpl implements PaymentService {
         return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);
     }
     @Override
-    @Transactional(rollbackOn = {NullPointerException.class, NotAuthorizedException.class})
+    @Transactional(rollbackOn = {NullPointerException.class, OrderNotFoundException.class})
     public ResponseEntity<?> proceedToPayment(HttpServletRequest request, PaystackTransactionRequestDto paystackTransactionRequestDto) throws IOException {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         User user = infoGetter.getUser(userService.getUsernameOfLoggedInUser());
         String paymentUrl;
         try {
+            extractCartItemsInSessionAndSaveToCartInDatabase(request, user);
             createOrder(request, user);
             paymentUrl = initializeTransaction(paystackTransactionRequestDto, user);
         } catch (IOException e) {
@@ -147,11 +168,11 @@ public class PaymentServiceImpl implements PaymentService {
         ApiResponseMessages<String> apiResponseMessages = new ApiResponseMessages<>();
         apiResponseMessages.setMessage(ConstantMessages.FAILED.getMessage());
         User user = infoGetter.getUser(userService.getUsernameOfLoggedInUser());
-        Order order = infoGetter.getOrder(user.getId());
+        CustomerOrder customerOrder = infoGetter.getOrder(user.getId());
         PaystackVerificationResponseDto paystackVerificationResponseDto = null;
         try {
             CloseableHttpClient client = HttpClientBuilder.create().build();
-            HttpGet request = new HttpGet("https://api.paystack.co/transaction/verify/"+order.getReference());
+            HttpGet request = new HttpGet("https://api.paystack.co/transaction/verify/"+ customerOrder.getReference());
             request.addHeader("Content-type", "application/json");
             request.addHeader("Authorization", "Bearer sk_test_b5756e19ed7f96c84b253095358de89a137f8252");
             StringBuilder dataReceived = new StringBuilder();
@@ -172,7 +193,7 @@ public class PaymentServiceImpl implements PaymentService {
                 throw new InterruptedException("An error occurred while verifying payment");
             } else if (paystackVerificationResponseDto.getData().getStatus().equals("success")) {
                 Update update = new Update();
-                update.updateOrder(order, paystackVerificationResponseDto.getData().getPaid_at());
+                update.updateOrder(customerOrder, paystackVerificationResponseDto.getData().getPaid_at());
                 update.updateInventory(httpRequest);
                 apiResponseMessages.setMessage(ConstantMessages.TRANSACTION_SUCCESSFUL.getMessage());
                 return new ResponseEntity<>(apiResponseMessages, HttpStatus.OK);

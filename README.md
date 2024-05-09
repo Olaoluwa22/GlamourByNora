@@ -22,4 +22,4 @@ Shopping Cart: Add and manage items in the shopping cart.
 
 Checkout Process: Smooth checkout process with payment integration.
 
-Admin Panel: Manage products, users, orders, and other aspects of the system.
+Admin Panel: Manage products, users, customerOrders, and other aspects of the system.
